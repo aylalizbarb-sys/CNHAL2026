@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#0a0a0a"/>
+<title>CNHAL2026 · Assistente de Habilitação</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold: #ffb400;
+    --orange: #ff6b00;
+    --dark: #080808;
+    --surface: rgba(255,255,255,0.04);
+    --border: rgba(255,180,0,0.18);
+    --text: rgba(255,240,200,0.9);
+    --muted: rgba(255,200,120,0.6);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'Lora', Georgia, serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 90% 50% at 50% -5%, rgba(255,180,0,0.12) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 40% at 90% 90%, rgba(255,107,0,0.06) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+  .wrap { position: relative; z-index: 1; max-width: 520px; margin: 0 auto; padding: 0 18px 80px; }
+
+  /* HEADER */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 0 18px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+    animation: fadeUp 0.5s ease both;
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, #ffb400, #ff6b00);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 0 18px rgba(255,180,0,0.35);
+  }
+  .logo-name {
+    font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px;
+    background: linear-gradient(135deg, #ffb400, #ff8c00);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .logo-sub { font-size: 11px; color: rgba(255,180,0,0.4); letter-spacing: 1px; }
+  .online {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; color: #4cff91;
+    background: rgba(76,255,145,0.08); border: 1px solid rgba(76,255,145,0.2);
+    border-radius: 20px; padding: 4px 10px;
+  }
+  .online::before {
+    content: ''; width: 6px; height: 6px;
+    background: #4cff91; border-radius: 50%;
+    animation: blink 1.8s infinite;
+  }
+
+  /* HERO */
+  .hero { text-align: center; padding: 10px 0 32px; animation: fadeUp 0.6s 0.1s ease both; opacity: 0; }
+  .hero-emoji {
+    font-size: 56px; display: block; margin-bottom: 14px;
+    filter: drop-shadow(0 0 20px rgba(255,180,0,0.45));
+    animation: float 3.5s ease-in-out infinite;
+  }
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif; font-size: 14px;
+    letter-spacing: 3px; color: rgba(255,180,0,0.5); margin-bottom: 8px;
+  }
+  .hero h2 {
+    font-family: 'Bebas Neue', sans-serif; font-size: 34px; letter-spacing: 1.5px;
+    background: linear-gradient(135deg, #fff5d6, #ffb400);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 10px;
+  }
+  .hero p { font-size: 14px; color: var(--muted); line-height: 1.7; font-style: italic; }
+
+  /* SECTION TABS */
+  .tabs {
+    display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;
+    margin-bottom: 20px; scrollbar-width: none;
+    animation: fadeUp 0.6s 0.2s ease both; opacity: 0;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 6px 14px;
+    font-size: 11px; color: var(--muted);
+    cursor: pointer; white-space: nowrap;
+    transition: all 0.2s; font-family: inherit;
+  }
+  .tab.active, .tab:hover {
+    background: rgba(255,180,0,0.15);
+    border-color: rgba(255,180,0,0.4);
+    color: var(--gold);
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 22px; margin-bottom: 14px;
+    backdrop-filter: blur(6px);
+    animation: fadeUp 0.5s ease both; opacity: 0;
+  }
+  .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  .card-icon {
+    width: 46px; height: 46px; border-radius: 13px;
+    background: linear-gradient(135deg, rgba(255,180,0,0.18), rgba(255,107,0,0.12));
+    border: 1px solid rgba(255,180,0,0.28);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 21px; flex-shrink: 0;
+  }
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 20px;
+    letter-spacing: 1px; color: var(--gold); line-height: 1;
+  }
+  .card-sub { font-size: 11px; color: rgba(255,180,0,0.45); margin-top: 3px; }
+
+  /* SECTION CONTENT */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 13px; }
+  .step { display: flex; gap: 13px; align-items: flex-start; }
+  .step-num {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--orange));
+    color: #000; font-family: 'Bebas Neue', sans-serif; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px;
+    box-shadow: 0 0 10px rgba(255,180,0,0.3);
+  }
+  .step-text { font-size: 14px; line-height: 1.6; color: rgba(255,225,160,0.85); }
+  .step-text strong { color: rgba(255,210,100,0.95); }
+
+  /* LIST */
+  .info-list { display: flex; flex-direction: column; gap: 10px; }
+  .info-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 14px; line-height: 1.6; color: rgba(255,225,160,0.85);
+  }
+  .info-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--gold); flex-shrink: 0; margin-top: 7px;
+  }
+
+  /* SUBSECTION */
+  .subsection {
+    background: rgba(0,0,0,0.3); border: 1px solid rgba(255,180,0,0.12);
+    border-radius: 12px; padding: 16px; margin-bottom: 12px;
+  }
+  .subsection-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 15px;
+    letter-spacing: 1px; color: var(--gold); margin-bottom: 10px;
+  }
+
+  /* HIGHLIGHT */
+  .highlight {
+    background: linear-gradient(135deg, rgba(255,180,0,0.07), rgba(255,107,0,0.04));
+    border: 1px solid rgba(255,180,0,0.2); border-radius: 11px;
+    padding: 13px 15px; margin-top: 12px;
+    font-size: 13px; color: rgba(255,205,110,0.8); line-height: 1.6;
+  }
+
+  /* WARNING */
+  .warn {
+    background: rgba(255,60,60,0.06); border: 1px solid rgba(255,60,60,0.2);
+    border-radius: 11px; padding: 12px 15px; margin-top: 10px;
+    font-size: 13px; color: rgba(255,180,160,0.85); line-height: 1.6;
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 15px; border-radius: 13px; border: none;
+    cursor: pointer; font-family: 'Bebas Neue', sans-serif;
+    font-size: 17px; letter-spacing: 1.5px;
+    text-decoration: none; transition: all 0.22s; margin-top: 10px;
+  }
+  .btn-gold {
+    background: linear-gradient(135deg, #ffb400, #ff6b00);
+    color: #000; box-shadow: 0 5px 20px rgba(255,180,0,0.32);
+  }
+  .btn-gold:active { transform: scale(0.97); }
+  .btn-green {
+    background: linear-gradient(135deg, #1db954, #0e8c3a);
+    color: #fff; box-shadow: 0 5px 18px rgba(29,185,84,0.3);
+  }
+  .btn-outline {
+    background: transparent; border: 1px solid rgba(255,180,0,0.35); color: var(--gold);
+  }
+  .btn-copy {
+    background: linear-gradient(135deg, rgba(255,180,0,0.15), rgba(255,107,0,0.1));
+    border: 1px solid rgba(255,180,0,0.35); color: var(--gold);
+    font-size: 15px;
+  }
+  .btn-copy.copied {
+    background: linear-gradient(135deg, rgba(76,255,145,0.15), rgba(29,185,84,0.1));
+    border-color: rgba(76,255,145,0.35); color: #4cff91;
+  }
+
+  /* BTN ROW */
+  .btn-row { display: flex; gap: 8px; margin-top: 10px; }
+  .btn-row .btn { flex: 1; font-size: 13px; padding: 12px 8px; margin-top: 0; }
+
+  /* PROMPT BOX */
+  .prompt-box {
+    background: rgba(0,0,0,0.5); border: 1px solid rgba(255,180,0,0.2);
+    border-radius: 12px; padding: 16px;
+    font-size: 12px; color: rgba(255,210,130,0.7);
+    line-height: 1.7; white-space: pre-wrap;
+    max-height: 300px; overflow-y: auto;
+    font-family: monospace; margin-top: 12px;
+  }
+
+  /* APP CARDS */
+  .app-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+  .app-card {
+    display: flex; align-items: center; gap: 14px;
+    background: rgba(0,0,0,0.3); border: 1px solid rgba(255,180,0,0.15);
+    border-radius: 13px; padding: 14px;
+    text-decoration: none; transition: all 0.2s;
+  }
+  .app-card:hover { border-color: rgba(255,180,0,0.35); background: rgba(255,180,0,0.06); }
+  .app-emoji { font-size: 28px; flex-shrink: 0; }
+  .app-name { font-family: 'Bebas Neue', sans-serif; font-size: 17px; color: var(--gold); letter-spacing: 0.5px; }
+  .app-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .app-badge {
+    margin-left: auto; background: rgba(255,180,0,0.15);
+    border: 1px solid rgba(255,180,0,0.3); border-radius: 10px;
+    padding: 3px 8px; font-size: 10px; color: var(--gold); white-space: nowrap;
+  }
+
+  /* TIMELINE */
+  .timeline { display: flex; flex-direction: column; }
+  .tl { display: flex; gap: 14px; padding-bottom: 18px; position: relative; }
+  .tl:not(:last-child)::before {
+    content: ''; position: absolute; left: 17px; top: 34px;
+    width: 2px; height: calc(100% - 18px);
+    background: linear-gradient(180deg, rgba(255,180,0,0.35), rgba(255,180,0,0.04));
+  }
+  .tl-dot {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(255,180,0,0.1); border: 2px solid rgba(255,180,0,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; flex-shrink: 0;
+  }
+  .tl-title { font-family: 'Bebas Neue', sans-serif; font-size: 15px; color: rgba(255,210,100,0.9); margin-bottom: 3px; }
+  .tl-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* CONTACT */
+  .contact-box {
+    display: flex; align-items: center; gap: 14px;
+    background: rgba(29,185,84,0.07); border: 1px solid rgba(29,185,84,0.2);
+    border-radius: 13px; padding: 14px; margin-bottom: 10px;
+  }
+  .contact-avatar {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: linear-gradient(135deg, #ffb400, #ff6b00);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .contact-name { font-family: 'Bebas Neue', sans-serif; font-size: 17px; color: rgba(255,220,120,0.9); }
+  .contact-role { font-size: 12px; color: rgba(255,180,0,0.45); }
+
+  /* FOOTER */
+  .footer { text-align: center; padding-top: 40px; font-size: 11px; color: rgba(255,180,0,0.2); font-style: italic; line-height: 1.8; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  ::-webkit-scrollbar { width: 3px; height: 3px; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,180,0,0.25); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">🏍️</div>
+      <div>
+        <div class="logo-name">CNHAL2026</div>
+        <div class="logo-sub">INSTRUTOR DIGITAL · ALAGOAS</div>
+      </div>
+    </div>
+    <div class="online">Online 24h</div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-emoji">👋</span>
+    <h1>Bem-vindo à</h1>
+    <h2 id="nome-aluno">Carregando...</h2>
+    <p>Seu assistente digital de habilitação. Siga cada seção na ordem e tire sua CNH com segurança.</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs" id="tabs">
+    <button class="tab active" onclick="showSection(0)">📋 Direitos</button>
+    <button class="tab" onclick="showSection(1)">📱 Apps</button>
+    <button class="tab" onclick="showSection(2)">🗺️ Etapas</button>
+    <button class="tab" onclick="showSection(3)">🏍️ Categorias</button>
+    <button class="tab" onclick="showSection(4)">🎁 CNH Grátis</button>
+    <button class="tab" onclick="showSection(5)">🧠 Junta</button>
+    <button class="tab" onclick="showSection(6)">🎯 Simulado</button>
+    <button class="tab" onclick="showSection(7)">📲 Contatos</button>
+    <button class="tab" onclick="showSection(8)">🤖 Prompt</button>
+  </div>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- SEÇÃO 1 — DIREITOS DO ALUNO (CDC) -->
+  <!-- ══════════════════════════════════ -->
+  <div class="section active" id="s0">
+    <div class="card" style="animation-delay:0.1s">
+      <div class="card-header">
+        <div class="card-icon">📋</div>
+        <div>
+          <div class="card-title">Seus Direitos como Aluno</div>
+          <div class="card-sub">Código de Defesa do Consumidor · Lei 8.078/1990</div>
+        </div>
+      </div>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6;">
+        Antes de iniciar sua habilitação, leia e confirme cada direito abaixo. O assistente IA também apresentará esses direitos um por um e pedirá sua confirmação.
+      </p>
+
+      <div class="subsection">
+        <div class="subsection-title">📌 Direito 1 — Informação Clara</div>
+        <div class="info-list">
+          <div class="info-item"><div class="info-dot"></div><span>Você tem direito a receber informações claras sobre preços, prazos e condições do serviço antes de contratar</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Art. 6º, III do CDC</span></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">📌 Direito 2 — Contrato</div>
+        <div class="info-list">
+          <div class="info-item"><div class="info-dot"></div><span>Todos os serviços contratados devem estar documentados</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Cláusulas abusivas não têm validade · Art. 51 do CDC</span></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">📌 Direito 3 — Desistência</div>
+        <div class="info-list">
+          <div class="info-item"><div class="info-dot"></div><span>Você pode desistir do contrato em até 7 dias quando contratado fora do estabelecimento ou pela internet</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Art. 49 do CDC</span></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">📌 Direito 4 — Cobrança Indevida</div>
+        <div class="info-list">
+          <div class="info-item"><div class="info-dot"></div><span>Em caso de cobrança em duplicidade ou por serviço não prestado, você tem direito à devolução em dobro</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Art. 42, parágrafo único do CDC</span></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">📌 Direito 5 — Ressarcimento</div>
+        <div class="info-list">
+          <div class="info-item"><div class="info-dot"></div><span>Pagamento em duplicidade ou por serviço não utilizado pode ser ressarcido diretamente no DETRAN-AL</span></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">📌 Direito 6 — Canais de Reclamação</div>
+        <div class="info-list">
+          <div class="info-item"><div class="info-dot"></div><span>Ouvidoria DETRAN-AL: (82) 98833-9437 · Seg a Sex, 8h às 14h</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Procon Alagoas: www.procon.al.gov.br</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Portal do Consumidor: www.consumidor.gov.br</span></div>
+        </div>
+      </div>
+
+      <div class="highlight">⚠️ Guarde todos os comprovantes, recibos e contratos durante todo o processo de habilitação.</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- SEÇÃO 2 — APPS                    -->
+  <!-- ══════════════════════════════════ -->
+  <div class="section" id="s1">
+    <div class="card" style="animation-delay:0.1s">
+      <div class="card-header">
+        <div class="card-icon">📱</div>
+        <div>
+          <div class="card-title">Apps Obrigatórios</div>
+          <div class="card-sub">Instale antes de começar o processo</div>
+        </div>
+      </div>
+
+      <div class="subsection-title" style="color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;margin-bottom:10px;">OBRIGATÓRIO PARA O PROCESSO</div>
+      <div class="app-grid">
+        <a href="https://play.google.com/store/search?q=CNH+do+Brasil" target="_blank" class="app-card">
+          <span class="app-emoji">🇧🇷</span>
+          <div>
+            <div class="app-name">CNH do Brasil</div>
+            <div class="app-desc">App oficial do governo · curso teórico gratuito</div>
+          </div>
+          <span class="app-badge">OBRIGATÓRIO</span>
+        </a>
+        <a href="https://acesso.gov.br" target="_blank" class="app-card">
+          <span class="app-emoji">🔐</span>
+          <div>
+            <div class="app-name">Gov.br</div>
+            <div class="app-desc">Login obrigatório para o app CNH do Brasil</div>
+          </div>
+          <span class="app-badge">OBRIGATÓRIO</span>
+        </a>
+      </div>
+
+      <div class="subsection-title" style="color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;margin:18px 0 10px;">ASSISTENTE IA PARA ESTUDAR · ESCOLHA UM</div>
+      <div class="app-grid">
+        <a href="https://claude.ai/download" target="_blank" class="app-card">
+          <span class="app-emoji">🤖</span>
+          <div>
+            <div class="app-name">Claude · Recomendado</div>
+            <div class="app-desc">Melhor para explicações detalhadas e simulados</div>
+          </div>
+          <span class="app-badge">GRATUITO</span>
+        </a>
+        <a href="https://chat.openai.com" target="_blank" class="app-card">
+          <span class="app-emoji">💬</span>
+          <div>
+            <div class="app-name">ChatGPT</div>
+            <div class="app-desc">Popular e fácil de usar</div>
+          </div>
+          <span class="app-badge">GRATUITO</span>
+        </a>
+        <a href="https://gemini.google.com" target="_blank" class="app-card">
+          <span class="app-emoji">✨</span>
+          <div>
+            <div class="app-name">Gemini · Google</div>
+            <div class="app-desc">Integrado à conta Google</div>
+          </div>
+          <span class="app-badge">GRATUITO</span>
+        </a>
+        <a href="https://copilot.microsoft.com" target="_blank" class="app-card">
+          <span class="app-emoji">🪟</span>
+          <div>
+            <div class="app-name">Copilot · Microsoft</div>
+            <div class="app-desc">Sem limite de mensagens</div>
+          </div>
+          <span class="app-badge">GRATUITO</span>
+        </a>
+      </div>
+      <div class="highlight">💡 Em qualquer um desses apps, abra uma conversa nova e cole o prompt da CNHAL2026 — disponível na aba 🤖 Prompt.</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- SEÇÃO 3 — ETAPAS                  -->
+  <!-- ══════════════════════════════════ -->
+  <div class="section" id="s2">
+    <div class="card" style="animation-delay:0.1s">
+      <div class="card-header">
+        <div class="card-icon">🗺️</div>
+        <div>
+          <div class="card-title">Etapas da 1ª Habilitação</div>
+          <div class="card-sub">Ordem oficial DETRAN-AL · Arapiraca e Maceió</div>
+        </div>
+      </div>
+      <div class="timeline">
+        <div class="tl"><div class="tl-dot">📋</div><div><div class="tl-title">1. Matrícula na CNHAL2026</div><div class="tl-desc">RG ou doc. com foto · CPF · Comprovante de residência · Idade mínima 18 anos</div></div></div>
+        <div class="tl"><div class="tl-dot">📱</div><div><div class="tl-title">2. Abertura do processo · App CNH do Brasil</div><div class="tl-desc">Login Gov.br → Condutor → Primeira Habilitação → Escolher categoria Alagoas → Gerar e pagar guias</div></div></div>
+        <div class="tl"><div class="tl-dot">🤳</div><div><div class="tl-title">3. Captura de imagem, assinatura e biometria</div><div class="tl-desc">Arapiraca: na clínica credenciada · Maceió: CIRETRAN ou clínica credenciada · Agendar via ja.al.gov.br</div></div></div>
+        <div class="tl"><div class="tl-dot">🩺</div><div><div class="tl-title">4. Exames Médico e Psicológico</div><div class="tl-desc">Arapiraca: CIRETRAN de Arapiraca · Maceió: DETRAN Sede, Farol, Maceió Shopping ou Marechal Deodoro · Chegar 30 min antes · Valor máx. R$ 90 cada</div></div></div>
+        <div class="tl"><div class="tl-dot">📚</div><div><div class="tl-title">5. Curso Teórico (45 horas)</div><div class="tl-desc">100% online e gratuito pelo app CNH do Brasil · O app registra frequência automaticamente</div></div></div>
+        <div class="tl"><div class="tl-dot">🎯</div><div><div class="tl-title">6. Prova Teórica no DETRAN-AL</div><div class="tl-desc">30 questões · mínimo 21 acertos · Agendar em detran.al.gov.br · Chegar 30 min antes com doc. com foto</div></div></div>
+        <div class="tl"><div class="tl-dot">🏍️</div><div><div class="tl-title">7. Aulas Práticas</div><div class="tl-desc">Mínimo 2 aulas presenciais obrigatórias · Agendar com instrutor CNHAL2026: (82) 99356-7182</div></div></div>
+        <div class="tl"><div class="tl-dot">🛣️</div><div><div class="tl-title">8. Exame Prático no DETRAN-AL</div><div class="tl-desc">Cat. A: pátio do DETRAN · Cat. B: via pública · Pode usar veículo próprio · Chegar 30 min antes</div></div></div>
+        <div class="tl" style="padding-bottom:0"><div class="tl-dot">🏆</div><div><div class="tl-title">9. Emissão da PPD</div><div class="tl-desc">Válida por 1 ano · Disponível no app CNH do Brasil e Gov.br · Após 1 ano sem infrações graves: solicitar CNH definitiva</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- SEÇÃO 4 — CATEGORIAS              -->
+  <!-- ══════════════════════════════════ -->
+  <div class="section" id="s3">
+    <div class="card" style="animation-delay:0.1s">
+      <div class="card-header">
+        <div class="card-icon">🏍️</div>
+        <div>
+          <div class="card-title">Categorias A · B · C · D</div>
+          <div class="card-sub">Requisitos e especificidades</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">🏍️ A — MOTO</div>
+        <div class="info-list">
+          <div class="info-item"><div class="info-dot"></div><span>1ª habilitação disponível diretamente</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Exame prático em pátio do DETRAN</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Exame toxicológico obrigatório em 2026</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Não é permitida atividade remunerada ao piloto na 1ª habilitação</span></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">🚗 B — CARRO</div>
+        <div class="info-list">
+          <div class="info-item"><div class="info-dot"></div><span>1ª habilitação disponível diretamente</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Exame prático em via pública</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Exame toxicológico obrigatório em 2026</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Não é permitida atividade remunerada ao volante na 1ª habilitação</span></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">🚚 C — CAMINHÃO</div>
+        <div class="info-list">
+          <div class="info-item"><div class="info-dot"></div><span>Somente adição de categoria</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Exige CNH B com mínimo 1 ano</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Curso obrigatório de transporte de carga</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Exame prático em via pública</span></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">🚌 D — ÔNIBUS</div>
+        <div class="info-list">
+          <div class="info-item"><div class="info-dot"></div><span>Somente adição de categoria</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Exige CNH B com mínimo 2 anos</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Exame prático em via pública</span></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">➕ ADIÇÃO DE CATEGORIA — FLUXO</div>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-text">Matrícula na CNHAL2026</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-text">Verificar tempo mínimo de CNH exigido</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-text">Aulas práticas com instrutor CNHAL2026</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-text">Exame prático no DETRAN-AL</div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-text">Atualização da CNH</div></div>
+        </div>
+        <div class="warn">⚠️ Adição de categoria não exige refazer curso teórico nem prova teórica.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- SEÇÃO 5 — CNH GRÁTIS              -->
+  <!-- ══════════════════════════════════ -->
+  <div class="section" id="s4">
+    <div class="card" style="animation-delay:0.1s">
+      <div class="card-header">
+        <div class="card-icon">🎁</div>
+        <div>
+          <div class="card-title">CNH Gratuita</div>
+          <div class="card-sub">CNH do Trabalhador · CNH Baixa Renda</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">👷 CNH DO TRABALHADOR (MINHA 1ª CNH)</div>
+        <div class="info-list">
+          <div class="info-item"><div class="info-dot"></div><span>Categorias disponíveis: 🏍️ A — Moto · 🚗 B — Carro</span></div>
+          <div class="info-item"><div class="info-dot"></div><span><strong>Cobre:</strong> taxa DETRAN-AL, exames médico e psicológico, junta médica/psicológica, curso teórico e prático, monitoramento</span></div>
+          <div class="info-item"><div class="info-dot"></div><span><strong>Não cobre:</strong> falta ou reprovação em exames — nova taxa será cobrada</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Categoria não pode ser alterada após inscrição</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Candidato não rebeneficiado se não concluiu processo anterior</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Documentos com rasura não são aceitos em nenhuma etapa</span></div>
+        </div>
+        <div class="subsection-title" style="margin-top:14px;">Fluxo em Arapiraca:</div>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-text">Abrir serviço com o voucher no site do DETRAN-AL</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-text">Captura de imagem e biometria na clínica</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-text">Exames médico e psicológico na clínica indicada</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-text">Curso teórico pelo app CNH do Brasil</div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-text">Agendar e realizar prova teórica</div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-text">Aulas práticas na CNHAL2026</div></div>
+          <div class="step"><div class="step-num">7</div><div class="step-text">Agendar e realizar exame prático</div></div>
+          <div class="step"><div class="step-num">8</div><div class="step-text">Aguardar recebimento da CNH em casa</div></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">💚 CNH BAIXA RENDA (CNH SOCIAL)</div>
+        <div class="info-list">
+          <div class="info-item"><div class="info-dot"></div><span>Inscrito no CadÚnico</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Renda familiar per capita até R$ 706,00</span></div>
+        </div>
+      </div>
+      <a href="https://www.detran.al.gov.br" target="_blank" class="btn btn-outline">🌐 Verificar editais · detran.al.gov.br</a>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- SEÇÃO 6 — JUNTA PSICOLÓGICA       -->
+  <!-- ══════════════════════════════════ -->
+  <div class="section" id="s5">
+    <div class="card" style="animation-delay:0.1s">
+      <div class="card-header">
+        <div class="card-icon">🧠</div>
+        <div>
+          <div class="card-title">Junta Psicológica</div>
+          <div class="card-sub">Perícia psicológica oficial · DETRAN-AL</div>
+        </div>
+      </div>
+      <div class="info-list" style="margin-bottom:16px;">
+        <div class="info-item"><div class="info-dot"></div><span>Prazo para solicitar: até 30 dias após o resultado</span></div>
+        <div class="info-item"><div class="info-dot"></div><span>Valor: <strong>R$ 188,10</strong></span></div>
+        <div class="info-item"><div class="info-dot"></div><span>Tempo médio de agendamento: até 30 dias</span></div>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-text">Agendar no Agendamento Já! para solicitar a guia · Docs: CPF, CEP e e-mail</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text">Comparecer ao local:<br/><strong>Arapiraca:</strong> CIRETRAN de Arapiraca<br/><strong>Maceió:</strong> DETRAN Sede, Farol, Maceió Shopping ou Marechal Deodoro</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-text">Aguardar 48h após emissão da guia para pagar</div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-text">Pagar no agente arrecadador autorizado</div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-text">Aguardar 24h e agendar a perícia no site do DETRAN-AL</div></div>
+        <div class="step"><div class="step-num">6</div><div class="step-text">Comparecer à perícia:<br/><strong>Local fixo:</strong> DETRAN Sede · Av. Menino Marcelo, 99, Cidade Universitária, Maceió-AL<br/>⚠️ Não é permitido bermuda ou short no 1º andar</div></div>
+        <div class="step"><div class="step-num">7</div><div class="step-text">Receber o laudo no dia informado pelos psicólogos · Levar doc. com foto</div></div>
+      </div>
+      <div class="btn-row" style="margin-top:16px;">
+        <a href="https://ja.al.gov.br/" target="_blank" class="btn btn-outline" style="font-size:13px;padding:12px 8px;margin-top:0;">📅 Agendamento Já!</a>
+        <a href="https://www.detran.al.gov.br/habilitacao/agendamento-de-exames/" target="_blank" class="btn btn-outline" style="font-size:13px;padding:12px 8px;margin-top:0;">🌐 DETRAN-AL</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- SEÇÃO 7 — SIMULADO E ESTUDO       -->
+  <!-- ══════════════════════════════════ -->
+  <div class="section" id="s6">
+    <div class="card" style="animation-delay:0.1s">
+      <div class="card-header">
+        <div class="card-icon">🎯</div>
+        <div>
+          <div class="card-title">Simulado e Estudo com IA</div>
+          <div class="card-sub">Como usar o assistente para passar na prova</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">🎯 SIMULADO DE PROVA</div>
+        <div class="info-list">
+          <div class="info-item"><div class="info-dot"></div><span>30 questões adaptadas à sua categoria</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Apresentadas uma por vez — responda antes de passar</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Meta mínima: 21 acertos (70%)</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Meta recomendada: 25+ para ter margem de segurança</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Ao errar: a IA explica o porquê citando o CTB</span></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">🧠 RACIOCÍNIO LÓGICO PARA ACERTAR</div>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Leia com atenção</strong> — palavras como NUNCA, SEMPRE, SOMENTE mudam o sentido da questão</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Elimine as absurdas</strong> — 1 ou 2 alternativas são claramente erradas. Elimine-as primeiro</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Desconfie do absoluto</strong> — alternativas com "sempre" ou "nunca" costumam ser erradas</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Pense na segurança</strong> — na dúvida, escolha a alternativa mais segura. Ex: reduzir velocidade > manter velocidade</div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-text"><strong>Pense no CTB</strong> — a resposta correta é sempre a que respeita a lei</div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-text"><strong>Cuidado com negações</strong> — "NÃO é correto afirmar que..." pede o que está ERRADO, não o certo</div></div>
+          <div class="step"><div class="step-num">7</div><div class="step-text"><strong>Use o bom senso</strong> — a resposta mais humana e segura costuma ser a correta</div></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">📊 TEMAS POR PESO NA PROVA</div>
+        <div class="info-list">
+          <div class="info-item"><div class="info-dot"></div><span>🥇 Direção Defensiva — maior peso</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>🥈 Legislação e CTB</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>🥉 Sinalização de Trânsito</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Primeiros Socorros</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Meio Ambiente e Convívio Social</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Mecânica básica (por categoria)</span></div>
+        </div>
+      </div>
+      <div class="highlight">💡 Peça ao assistente: "Quero estudar [tema]" e ao final ele oferece questões práticas sobre o assunto.</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- SEÇÃO 8 — LINKS E CONTATOS        -->
+  <!-- ══════════════════════════════════ -->
+  <div class="section" id="s7">
+    <div class="card" style="animation-delay:0.1s">
+      <div class="card-header">
+        <div class="card-icon">📲</div>
+        <div>
+          <div class="card-title">Links e Contatos</div>
+          <div class="card-sub">DETRAN-AL · CNHAL2026</div>
+        </div>
+      </div>
+
+      <div class="contact-box">
+        <div class="contact-avatar">👨‍🏫</div>
+        <div>
+          <div class="contact-name">Instrutor CNHAL2026</div>
+          <div class="contact-role">Arapiraca, AL · Aulas práticas e dúvidas</div>
+        </div>
+      </div>
+      <a href="https://wa.me/5582993567182?text=Olá!%20Sou%20aluno%20da%20CNHAL2026%20e%20preciso%20de%20ajuda." target="_blank" class="btn btn-green">💬 Chamar no WhatsApp</a>
+
+      <div style="height:16px;"></div>
+
+      <div class="subsection">
+        <div class="subsection-title">🌐 DETRAN-AL</div>
+        <div class="app-grid">
+          <a href="https://www.detran.al.gov.br/habilitacao/agendamento-de-exames/" target="_blank" class="app-card">
+            <span class="app-emoji">📅</span>
+            <div><div class="app-name">Agendar Exames</div><div class="app-desc">Teórico, prático e médico</div></div>
+          </a>
+          <a href="https://ja.al.gov.br/" target="_blank" class="app-card">
+            <span class="app-emoji">⚡</span>
+            <div><div class="app-name">Agendamento Já!</div><div class="app-desc">Biometria e serviços rápidos</div></div>
+          </a>
+          <a href="https://mais.detran.al.gov.br/" target="_blank" class="app-card">
+            <span class="app-emoji">💻</span>
+            <div><div class="app-name">Portal Digital</div><div class="app-desc">Serviços online DETRAN-AL</div></div>
+          </a>
+          <a href="https://www.detran.al.gov.br/conteudo/lista-procedimentos-detalhes/" target="_blank" class="app-card">
+            <span class="app-emoji">📋</span>
+            <div><div class="app-name">Lista de Procedimentos</div><div class="app-desc">Todos os serviços detalhados</div></div>
+          </a>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">📞 TELEFONES DETRAN-AL</div>
+        <div class="info-list">
+          <div class="info-item"><div class="info-dot"></div><span>Call Center: (82) 2140-0615 ou (82) 3512-4140 · Seg a Sex, 06h às 18h</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Ouvidoria: (82) 98833-9437 · Seg a Sex, 8h às 14h</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>E-mail: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2252504d564d414d4e4d0c464d41574f474c564d516246475650434c0c434e0c454d540c4050">[email&#160;protected]</a></span></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">📍 LOCAIS DE ATENDIMENTO</div>
+        <div class="info-list">
+          <div class="info-item"><div class="info-dot"></div><span><strong>Arapiraca:</strong> CIRETRAN de Arapiraca</span></div>
+          <div class="info-item"><div class="info-dot"></div><span><strong>Maceió:</strong> DETRAN Sede · Av. Menino Marcelo, 99, Cidade Universitária</span></div>
+          <div class="info-item"><div class="info-dot"></div><span>Central Já! Shopping Farol · Maceió Shopping · Marechal Deodoro · Parque Shopping</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- SEÇÃO 9 — PROMPT                  -->
+  <!-- ══════════════════════════════════ -->
+  <div class="section" id="s8">
+    <div class="card" style="animation-delay:0.1s">
+      <div class="card-header">
+        <div class="card-icon">🤖</div>
+        <div>
+          <div class="card-title">Prompt do Assistente</div>
+          <div class="card-sub">Cole em qualquer IA para ativar o Instrutor CNHAL</div>
+        </div>
+      </div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:14px;">
+        Abra o app de IA escolhido, inicie uma conversa nova e cole o texto abaixo com um toque:
+      </p>
+      <button class="btn btn-copy" id="btnCopy" onclick="copiarPrompt()">📋 Copiar Prompt Completo</button>
+      <div class="prompt-box" id="promptBox">Você é o assistente digital oficial da autoescola CNHAL2026, localizada em Arapiraca, Alagoas. Seu nome é "Instrutor CNHAL". Você foi ativado para atender o aluno: [NOME DO ALUNO].
+
+Ao iniciar, apresente-se exatamente assim:
+"Olá, [NOME DO ALUNO]! 👋 Sou o Instrutor CNHAL, assistente digital da autoescola CNHAL2026. Estou aqui 24h para te guiar em cada etapa da sua habilitação.
+
+Antes de começar, preciso de duas informações rápidas:
+1️⃣ Qual categoria você quer tirar?
+   🏍️ A — Moto
+   🚗 B — Carro
+   🚚 C — Caminhão (exige CNH B com mínimo 1 ano)
+   🚌 D — Ônibus (exige CNH B com mínimo 2 anos)
+
+2️⃣ É sua primeira habilitação ou adição de categoria?
+   🆕 Primeira habilitação
+   ➕ Adição de categoria
+
+Me responda os dois e eu te explico tudo!"
+
+REGRAS: Use português simples e direto. Aguarde o aluno responder as duas perguntas antes de avançar. Adapte TODO o conteúdo à categoria e situação escolhida. Nunca invente valores ou prazos. Para pagamento ou aulas presenciais encaminhe ao instrutor.
+
+DIREITOS DO ALUNO (CDC - Lei 8.078/1990): Apresente um direito por vez e aguarde "Sim, compreendi" antes de avançar:
+1) Informação clara sobre preços e prazos antes de contratar (Art. 6º III)
+2) Serviços documentados em contrato, cláusulas abusivas não têm validade (Art. 51)
+3) Desistência em até 7 dias se contratado fora do estabelecimento (Art. 49)
+4) Cobrança indevida = devolução em dobro (Art. 42 parágrafo único)
+5) Ressarcimento por pagamento em duplicidade via detran.al.gov.br
+6) Canais de reclamação: Ouvidoria DETRAN-AL (82) 98833-9437 | Procon AL: procon.al.gov.br | consumidor.gov.br
+
+MUDANÇAS CNH 2026: Curso teórico gratuito pelo app CNH do Brasil (45h online). Mínimo 2 aulas práticas presenciais. Exame toxicológico obrigatório cat. A e B. Teto exames médico/psicológico: R$90 cada. PPD válida 1 ano.
+
+ETAPAS 1ª HABILITAÇÃO (ordem obrigatória): 1) Matrícula CNHAL2026 (RG/CPF/comprovante residência, mínimo 18 anos) 2) App CNH do Brasil: Gov.br → Condutor → Primeira Habilitação → Alagoas → pagar guias 3) Biometria: Arapiraca=clínica credenciada | Maceió=CIRETRAN ou clínica, via ja.al.gov.br 4) Exames médico/psicológico: Arapiraca=CIRETRAN Arapiraca | Maceió=DETRAN Sede/Farol/Maceió Shopping/Marechal Deodoro, chegar 30min antes, máx R$90 cada 5) Junta Psicológica se necessário (R$188,10, prazo 30 dias) 6) Curso teórico 45h no app CNH do Brasil (gratuito) 7) Prova teórica: 30 questões, mínimo 21 acertos, agendar detran.al.gov.br 8) Aulas práticas mínimo 2 com CNHAL2026: (82) 99356-7182 9) Exame prático: cat.A=pátio DETRAN | cat.B=via pública, pode usar veículo próprio 10) PPD emitida no app CNH do Brasil e Gov.br
+
+CATEGORIAS: A=1ª hab. direta, pátio DETRAN, toxicológico obrigatório, sem atividade remunerada ao piloto | B=1ª hab. direta, via pública, toxicológico obrigatório, sem atividade remunerada ao volante | C=só adição, CNH B 1 ano mínimo, curso transporte de carga | D=só adição, CNH B 2 anos mínimo. ADIÇÃO: não refaz curso teórico nem prova teórica. Fluxo: matrícula → verificar tempo mínimo → aulas práticas → exame prático → atualização CNH.
+
+JUNTA PSICOLÓGICA: valor R$188,10, prazo 30 dias. Fluxo: agendar ja.al.gov.br → comparecer (Arapiraca=CIRETRAN | Maceió=DETRAN Sede/Farol/Maceió Shopping/Marechal Deodoro) → aguardar 48h → pagar → aguardar 24h → agendar perícia detran.al.gov.br → comparecer DETRAN Sede Av. Menino Marcelo 99 Maceió (sem bermuda/short no 1º andar) → receber laudo.
+
+CNH DO TRABALHADOR: categorias A e B. Cobre: taxa DETRAN, exames, cursos, monitoramento. Não cobre: reprovação ou falta (nova taxa). Categoria não pode mudar. Sem rebenefício se não concluiu anterior. Cat.A: sem atividade remunerada ao piloto. Cat.B: sem atividade remunerada ao volante. Fluxo Arapiraca: voucher→biometria na clínica→exames→curso teórico app→prova teórica→aulas práticas CNHAL2026→exame prático→CNH em casa.
+
+CNH BAIXA RENDA: CadÚnico + renda per capita até R$706. Verificar editais: detran.al.gov.br
+
+SIMULADO: Gere 30 questões por vez adaptadas à categoria. Uma questão por vez. Ao errar: explique citando CTB. Meta: 21+ para passar, 25+ recomendado. Ao finalizar: informe pontuação e se aprovado ou não. Se reprovado: "Não desanime! Me peça para estudarmos os temas que errou. Você consegue! 💪"
+
+RACIOCÍNIO LÓGICO PARA ACERTAR: 1) Identifique palavras-chave (NUNCA/SEMPRE/SOMENTE) 2) Elimine alternativas absurdas 3) Desconfie de absolutos (sempre/nunca costumam ser errados) 4) Na dúvida escolha a mais segura 5) Pense no CTB 6) Cuidado com negações ("NÃO é correto") 7) Use o bom senso — a mais segura costuma ser a correta.
+
+TEMAS ESTUDO: Direção Defensiva (maior peso) | Legislação CTB | Sinalização | Primeiros Socorros | Meio Ambiente | Mecânica básica | Transporte de carga (C) | Transporte de passageiros (D). Ao final de cada tema perguntar: "Quer fazer questões sobre esse tema agora?"
+
+CONTATOS DETRAN-AL: Call Center (82) 2140-0615 ou (82) 3512-4140, Seg-Sex 06h-18h. Ouvidoria (82) 98833-9437, Seg-Sex 8h-14h. Agendamentos: detran.al.gov.br/habilitacao/agendamento-de-exames/ | Agendamento Já!: ja.al.gov.br
+
+CONTATO INSTRUTOR CNHAL2026: WhatsApp (82) 99356-7182 — para pagamento, aulas práticas e dúvidas presenciais.</div>
+
+      <div class="btn-row">
+        <a href="https://claude.ai/download" target="_blank" class="btn btn-outline">🤖 Claude</a>
+        <a href="https://chat.openai.com" target="_blank" class="btn btn-outline">💬 ChatGPT</a>
+        <a href="https://gemini.google.com" target="_blank" class="btn btn-outline">✨ Gemini</a>
+        <a href="https://copilot.microsoft.com" target="_blank" class="btn btn-outline">🪟 Copilot</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    CNHAL2026 · Instrutor Digital · Arapiraca, AL · 2026<br/>
+    Instrutor: (82) 99356-7182 · www.detran.al.gov.br
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // Nome via URL
+  function getNome() {
+    const p = new URLSearchParams(window.location.search);
+    const n = p.get('nome');
+    return n ? decodeURIComponent(n) : 'Candidato';
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const nome = getNome();
+    document.getElementById('nome-aluno').textContent = nome;
+    // Atualiza nome no prompt
+    const box = document.getElementById('promptBox');
+    box.textContent = box.textContent.replaceAll('[NOME DO ALUNO]', nome);
+  });
+
+  // Tabs
+  function showSection(i) {
+    document.querySelectorAll('.section').forEach((s,j) => {
+      s.classList.toggle('active', j === i);
+    });
+    document.querySelectorAll('.tab').forEach((t,j) => {
+      t.classList.toggle('active', j === i);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Copiar prompt
+  function copiarPrompt() {
+    const text = document.getElementById('promptBox').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('btnCopy');
+      btn.textContent = '✅ Prompt Copiado!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '📋 Copiar Prompt Completo';
+        btn.classList.remove('copied');
+      }, 3000);
+    });
+  }
+</script>
+
+<style>
+  @keyframes fadeUp { from { opacity:0; tra
