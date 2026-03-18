@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contrato de Introdução CNHAL2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #141414;
+    --card: #1a1a1a;
+    --border: #2a2a2a;
+    --accent: #c8a96e;
+    --accent2: #e8c990;
+    --text: #e8e8e8;
+    --muted: #888;
+    --danger: #e05555;
+    --success: #5cb85c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .logo-badge {
+    width: 48px; height: 48px;
+    background: var(--accent);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; color: #0d0d0d; font-weight: 700;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; color: var(--accent);
+    line-height: 1.2;
+  }
+  header p { font-size: 12px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
+
+  /* ── STEPS ── */
+  .steps-bar {
+    display: flex; justify-content: center; gap: 0;
+    padding: 20px 32px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .step {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-family: 'IBM Plex Mono', monospace;
+    color: var(--muted); padding: 0 16px;
+    position: relative;
+  }
+  .step::after {
+    content: '▸'; position: absolute; right: -4px;
+    color: var(--border);
+  }
+  .step:last-child::after { display: none; }
+  .step.active { color: var(--accent); }
+  .step.done { color: var(--success); }
+  .step-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--border); display: flex; align-items: center;
+    justify-content: center; font-size: 10px; font-weight: 600;
+  }
+  .step.active .step-num { background: var(--accent); color: #0d0d0d; }
+  .step.done .step-num { background: var(--success); color: #fff; }
+
+  /* ── MAIN ── */
+  main { max-width: 860px; margin: 0 auto; padding: 32px 16px 80px; }
+
+  /* ── SECTION CARD ── */
+  .section {
+    display: none;
+    animation: fadeUp .35s ease;
+  }
+  .section.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title::before {
+    content: ''; display: block; width: 3px; height: 14px;
+    background: var(--accent); border-radius: 2px;
+  }
+
+  /* ── FORM ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-grid.full { grid-template-columns: 1fr; }
+  @media(max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label {
+    font-size: 11px; font-family: 'IBM Plex Mono', monospace;
+    color: var(--muted); letter-spacing: 1px; text-transform: uppercase;
+  }
+  .field input, .field select, .field textarea {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--accent);
+  }
+  .field select option { background: var(--surface); }
+  .field textarea { resize: vertical; min-height: 80px; }
+
+  /* ── CONTRACT TEXT ── */
+  .contract-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    font-size: 13px; line-height: 1.9;
+    color: #ccc;
+    max-height: 480px; overflow-y: auto;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .contract-box h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--accent2); font-size: 16px;
+    margin-bottom: 16px; text-align: center; letter-spacing: 1px;
+  }
+  .contract-box h3 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--accent); margin: 20px 0 8px;
+  }
+  .contract-box .highlight {
+    color: var(--accent2); font-weight: 500;
+  }
+  .contract-box::-webkit-scrollbar { width: 4px; }
+  .contract-box::-webkit-scrollbar-track { background: var(--border); }
+  .contract-box::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+  /* ── SIGNATURE CANVAS ── */
+  .sig-wrap {
+    position: relative;
+    border: 2px solid var(--border);
+    border-radius: 6px; overflow: hidden;
+    background: #0a0a0a;
+  }
+  #sigCanvas {
+    display: block; width: 100%; cursor: crosshair;
+    touch-action: none;
+  }
+  .sig-label {
+    position: absolute; bottom: 10px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+    color: #333; pointer-events: none; letter-spacing: 2px;
+    white-space: nowrap;
+  }
+  .sig-line {
+    position: absolute; bottom: 28px; left: 10%; right: 10%;
+    height: 1px; background: #222; pointer-events: none;
+  }
+  .btn-row { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 11px 24px; border-radius: 4px; border: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+    cursor: pointer; transition: all .2s; font-weight: 600;
+  }
+  .btn-primary { background: var(--accent); color: #0d0d0d; }
+  .btn-primary:hover { background: var(--accent2); }
+  .btn-outline { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-success:hover { background: #4caa4c; }
+
+  /* ── CHECKBOX ── */
+  .checkbox-row {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 16px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; cursor: pointer;
+  }
+  .checkbox-row input[type=checkbox] {
+    width: 18px; height: 18px; accent-color: var(--accent);
+    flex-shrink: 0; margin-top: 2px; cursor: pointer;
+  }
+  .checkbox-row span { font-size: 13px; line-height: 1.6; color: #ccc; }
+
+  /* ── FINAL SCREEN ── */
+  .final-card {
+    text-align: center; padding: 48px 28px;
+  }
+  .final-icon {
+    font-size: 56px; margin-bottom: 16px;
+    animation: pop .5s ease;
+  }
+  @keyframes pop {
+    from { transform: scale(0); }
+    to   { transform: scale(1); }
+  }
+  .final-card h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--accent); font-size: 24px; margin-bottom: 8px;
+  }
+  .final-card p { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+
+  .info-row {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 14px 18px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; margin-bottom: 12px; text-align: left;
+  }
+  .info-row .ico { font-size: 18px; }
+  .info-row strong { color: var(--accent); font-weight: 500; }
+
+  /* ── PROGRESS ── */
+  .nav-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 28px; flex-wrap: wrap; gap: 12px;
+  }
+
+  /* ── PROMPT PREVIEW ── */
+  .prompt-box {
+    background: #0a0a0a; border: 1px solid #2a2a2a;
+    border-radius: 6px; padding: 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; line-height: 1.8; color: #aaa;
+    white-space: pre-wrap; max-height: 320px; overflow-y: auto;
+  }
+  .prompt-box .cmd { color: var(--accent); }
+  .prompt-box .val { color: #7ec8a0; }
+
+  .tag {
+    display: inline-block; padding: 2px 8px;
+    background: rgba(200,169,110,.15); color: var(--accent);
+    border-radius: 3px; font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace; margin: 2px;
+  }
+
+  .divider {
+    border: none; border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  .alert {
+    padding: 12px 16px; border-radius: 4px;
+    font-size: 13px; margin-bottom: 16px;
+  }
+  .alert-warn {
+    background: rgba(200,169,110,.1);
+    border: 1px solid rgba(200,169,110,.3);
+    color: var(--accent2);
+  }
+
+  
+
+  /* ── QUIZ ── */
+  .quiz-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    transition: border-color .2s;
+  }
+  .quiz-item.ok { border-color: var(--success); }
+  .quiz-item.erro { border-color: var(--danger); animation: shake .3s; }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}
+  }
+  .quiz-num {
+    min-width: 32px; height: 32px;
+    background: var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; font-weight: 700; color: var(--muted);
+    flex-shrink: 0;
+  }
+  .quiz-item.ok .quiz-num { background: var(--success); color: #fff; }
+  .quiz-item.erro .quiz-num { background: var(--danger); color: #fff; }
+  .quiz-text { font-size: 13px; color: #ccc; line-height: 1.7; flex: 1; }
+  .quiz-text strong { color: var(--accent2); }
+  .quiz-btns { display: flex; gap: 8px; margin-top: 12px; }
+  .quiz-btn {
+    padding: 8px 20px; border-radius: 4px; border: 1px solid var(--border);
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 1px; cursor: pointer; font-weight: 600;
+    background: transparent; color: var(--muted); transition: all .15s;
+  }
+  .quiz-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .quiz-btn.selected-sim { background: var(--success); color: #fff; border-color: var(--success); }
+  .quiz-btn.selected-nao { background: var(--danger); color: #fff; border-color: var(--danger); }
+  .quiz-feedback {
+    font-size: 11px; font-family: 'IBM Plex Mono', monospace;
+    margin-top: 8px; min-height: 14px; letter-spacing: 1px;
+  }
+  .quiz-feedback.ok { color: var(--success); }
+  .quiz-feedback.erro { color: var(--danger); }
+  .quiz-progress {
+    display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .quiz-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--border); transition: background .2s;
+  }
+  .quiz-dot.ok { background: var(--success); }
+  .quiz-dot.pending { background: var(--accent); }
+
+  .quiz-select {
+    width: 100%; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 4px;
+    color: var(--text); font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px; padding: 10px 12px; outline: none;
+    margin-top: 10px; transition: border-color .2s;
+  }
+  .quiz-select:focus { border-color: var(--accent); }
+  .quiz-select option { background: var(--surface); }
+  .quiz-input-placa {
+    width: 100%; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 4px;
+    color: var(--accent); font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px; letter-spacing: 3px; text-transform: uppercase;
+    padding: 10px 12px; outline: none; margin-top: 8px;
+    transition: border-color .2s;
+  }
+  .quiz-input-placa:focus { border-color: var(--accent); }
+  .quiz-input-placa::placeholder { color: #444; letter-spacing: 2px; }
+  .veiculo-box {
+    margin-top: 12px; padding: 14px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; display: none;
+  }
+  .veiculo-box.visivel { display: block; }
+  .nivel-badge {
+    display: inline-block; padding: 4px 12px; border-radius: 20px;
+    font-size: 11px; font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 1px; margin-top: 8px; font-weight: 600;
+  }
+  .nivel-iniciante { background: rgba(92,184,92,.15); color: var(--success); border: 1px solid var(--success); }
+  .nivel-intermediario { background: rgba(200,169,110,.15); color: var(--accent); border: 1px solid var(--accent); }
+  .nivel-conduzo { background: rgba(114,137,218,.15); color: #7289da; border: 1px solid #7289da; }
+
+  /* ── ANTIFRAUDE ── */
+  .selfie-wrap {
+    background: var(--surface); border: 2px dashed var(--border);
+    border-radius: 8px; padding: 20px; text-align: center;
+    cursor: pointer; transition: border-color .2s;
+  }
+  .selfie-wrap:hover { border-color: var(--accent); }
+  .selfie-wrap img { max-width: 200px; border-radius: 8px; margin-top: 12px; display:none; }
+  .selfie-wrap.captured { border-color: var(--success); border-style: solid; }
+  .selfie-wrap.captured img { display: block; margin: 12px auto 0; }
+  #selfieInput { display: none; }
+  .frase-input {
+    width: 100%; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 4px;
+    color: var(--text); font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px; padding: 12px; outline: none;
+    transition: border-color .2s; margin-top: 8px;
+  }
+  .frase-input:focus { border-color: var(--accent); }
+  .frase-input.ok { border-color: var(--success); }
+  .frase-input.erro { border-color: var(--danger); }
+  .hash-display {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    color: #444; word-break: break-all; margin-top: 8px;
+    padding: 8px; background: #0a0a0a; border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-badge">A</div>
+  <div>
+    <h1 id="escolaNome">CNHAL2026</h1>
+    <p id="escolaInfo">Arapiraca, AL · Instrutor: Eduardo Henrique Silva Barbosa</p>
+  </div>
+</header>
+
+<div class="steps-bar">
+  <div class="step active" id="sQ"><div class="step-num">?</div>Ciência</div>
+  <div class="step" id="s0"><div class="step-num">✦</div>Como Funciona</div>
+  <div class="step" id="s1"><div class="step-num">1</div>Dados</div>
+  <div class="step" id="s2"><div class="step-num">2</div>Plano</div>
+  <div class="step" id="s3"><div class="step-num">3</div>Contrato</div>
+  <div class="step" id="s4"><div class="step-num">4</div>Assinatura</div>
+  <div class="step" id="s5"><div class="step-num">5</div>Concluído</div>
+</div>
+
+<main>
+
+<!-- ═══ STEP Q: QUESTIONÁRIO ═══ -->
+<div class="section active" id="secQ">
+  <div class="card">
+    <div class="card-title">Questionário de Ciência — CNHAL2026</div>
+    <p style="font-size:13px; color:var(--muted); line-height:1.8; margin-bottom:20px">
+      Antes de prosseguir, responda <strong style="color:var(--accent)">Sim</strong> ou <strong style="color:var(--danger)">Não</strong> a cada pergunta.<br>
+      Você só poderá assinar o contrato se confirmar <strong>todos os pontos com Sim</strong>.
+    </p>
+    <div class="quiz-progress" id="quizProgress"></div>
+    <div style="display:flex; flex-direction:column; gap:12px" id="quizLista"></div>
+  </div>
+  <div class="nav-row" style="margin-top:20px">
+    <span></span>
+    <button class="btn btn-primary" id="btnAvancarQuiz" onclick="avancarQuiz()" disabled style="opacity:.4;cursor:not-allowed">
+      Confirmar e continuar →
+    </button>
+  </div>
+</div>
+
+<!-- ═══ STEP 0: COMO FUNCIONA ═══ -->
+<div class="section" id="sec0">
+  <div class="card">
+    <div class="card-title">Bem-vindo à CNHAL2026</div>
+    <p style="font-size:14px; color:#ccc; line-height:1.8; margin-bottom:24px">
+      Antes de preencher o contrato, leia com atenção como funciona o nosso modelo de instrução.
+      Ele é <strong style="color:var(--accent)">diferente de um modelo de instrução tradicional</strong> — entender isso é essencial.
+    </p>
+
+    <div style="display:flex; flex-direction:column; gap:12px">
+
+      <div style="display:flex; gap:16px; align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:18px">
+        <div style="min-width:40px; height:40px; background:var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-weight:700; color:#000; font-size:16px">1</div>
+        <div>
+          <div style="font-weight:600; color:var(--accent2); margin-bottom:4px">Você assina o contrato e realiza o pagamento via PIX</div>
+          <div style="font-size:13px; color:#aaa; line-height:1.7">Após a confirmação do pagamento, o instrutor Eduardo entra em contato via WhatsApp e envia o seu <strong style="color:var(--accent)">Prompt de Instrução personalizado</strong>.</div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:16px; align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:18px">
+        <div style="min-width:40px; height:40px; background:var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-weight:700; color:#000; font-size:16px">2</div>
+        <div>
+          <div style="font-weight:600; color:var(--accent2); margin-bottom:4px">Você estuda com o Assistente de IA (online, no seu ritmo)</div>
+          <div style="font-size:13px; color:#aaa; line-height:1.7">Com o prompt recebido, você configura um assistente de Inteligência Artificial (Claude ou ChatGPT) que vira o seu instrutor virtual. Ele ensina toda a <strong style="color:var(--accent)">teoria de trânsito</strong>, aplica simulados, tira dúvidas e acompanha seu progresso — 24 horas por dia, no seu celular.<br><span style="color:#666; font-size:12px">⚠ Este assistente não substitui o instrutor. Dúvidas sobre pagamento ou DETRAN devem ser tratadas exclusivamente com o instrutor.</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:16px; align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:18px">
+        <div style="min-width:40px; height:40px; background:var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-weight:700; color:#000; font-size:16px">3</div>
+        <div>
+          <div style="font-weight:600; color:var(--accent2); margin-bottom:4px">1 Aula Técnica e Teórica Presencial com o instrutor</div>
+          <div style="font-size:13px; color:#aaa; line-height:1.7">Quando estiver preparado, você agenda com o instrutor a aula técnica presencial. Nela são consolidados os conteúdos obrigatórios exigidos pelo DETRAN/AL para a sua categoria.</div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:16px; align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:18px">
+        <div style="min-width:40px; height:40px; background:var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-weight:700; color:#000; font-size:16px">4</div>
+        <div>
+          <div style="font-weight:600; color:var(--accent2); margin-bottom:4px">2 Aulas Práticas de Pilotagem / Direção Presenciais</div>
+          <div style="font-size:13px; color:#aaa; line-height:1.7">As duas aulas práticas obrigatórias são realizadas presencialmente com o instrutor. É aqui que você coloca em prática tudo que aprendeu na teoria.</div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:16px; align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:18px">
+        <div style="min-width:40px; height:40px; background:var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-weight:700; color:#000; font-size:16px">5</div>
+        <div>
+          <div style="font-weight:600; color:var(--accent2); margin-bottom:4px">Processo DETRAN — tratado direto com o instrutor</div>
+          <div style="font-size:13px; color:#aaa; line-height:1.7">Após as aulas, o instrutor orienta os próximos passos junto ao DETRAN/AL. <strong style="color:var(--accent)">Seus dados pessoais são entregues ao DETRAN somente pelo instrutor responsável por este contrato</strong>, após confirmação de pagamento. Nunca forneça seus dados a terceiros.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="alert alert-warn" style="margin-top:20px; font-size:13px; line-height:1.8; text-align:center">
+      🏍️ <strong>Este não é um curso de aulas particulares.</strong><br>
+      É um modelo de instrução inteligente onde a IA faz o acompanhamento contínuo<br>e o instrutor atua nas etapas que exigem presença física e processo oficial.
+    </div>
+  </div>
+
+  <div style="margin-top:8px">
+    <label class="checkbox-row">
+      <input type="checkbox" id="chkEntendeu">
+      <span>Entendi como funciona o modelo CNHAL2026 e concordo em prosseguir para o preenchimento do contrato.</span>
+    </label>
+  </div>
+
+  <div class="nav-row">
+    <span></span>
+    <button class="btn btn-primary" onclick="goTo(1)">Entendi, preencher contrato →</button>
+  </div>
+</div>
+
+<!-- ═══ STEP 1: DADOS ═══ -->
+<div class="section" id="sec1">
+  <div class="card">
+    <div class="card-title">Identificação do Aluno</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Nome completo *</label>
+        <input type="text" id="nomeAluno" placeholder="João da Silva">
+      </div>
+      <div class="field">
+        <label>CPF</label>
+        <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14">
+      </div>
+      <div class="field">
+        <label>Data de Nascimento *</label>
+        <input type="date" id="nascimento">
+      </div>
+      <div class="field">
+        <label>Telefone / WhatsApp *</label>
+        <input type="text" id="telefone" placeholder="(82) 99999-9999">
+      </div>
+      <div class="field">
+        <label>E-mail (Chave PIX) *</label>
+        <input type="email" id="email" placeholder="aluno@email.com" required>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="form-grid">
+      <div class="field">
+        <label>Endereço</label>
+        <input type="text" id="endereco" placeholder="Rua, número, bairro">
+      </div>
+      <div class="field">
+        <label>Cidade / Estado</label>
+        <input type="text" id="cidade" placeholder="Arapiraca – AL" value="Arapiraca – AL">
+      </div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <span></span>
+    <button class="btn btn-primary" onclick="goTo(2)">Próximo: Plano →</button>
+  </div>
+</div>
+
+<!-- ═══ STEP 2: PLANO ═══ -->
+<div class="section" id="sec2">
+  <div class="card">
+    <div class="card-title">Plano e Modalidade</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Modalidade *</label>
+        <select id="modalidade"><option value="80% Online + 1 Aula Técnica e Teoria de Pilotagem">80% Online + 1 Aula Técnica e Teoria de Pilotagem</option></select>
+      </div>
+      <div class="field">
+        <label>Categoria</label>
+        <select id="categoria" onchange="atualizarValor()">
+          <option value="A – Motocicleta">A – Motocicleta</option>
+          <option value="B – Automóvel">B – Automóvel</option>
+          <option value="AB – Moto + Carro">AB – Moto + Carro</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Valor Total (R$) *</label>
+        <input type="text" id="valor" readonly style="background:#111;cursor:not-allowed;color:var(--accent);font-weight:600">
+      </div>
+      <div class="field">
+        <label>Forma de Pagamento</label>
+        <select id="pagamento">
+          <option value="À vista (PIX/Dinheiro)">À vista (PIX/Dinheiro)</option>
+          <option value="2x sem juros">2x sem juros</option>
+          <option value="3x sem juros">3x sem juros</option>
+          <option value="Parcelado (negociado)">Parcelado (negociado)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Data de Início</label>
+        <input type="date" id="dataInicio">
+      </div>
+      <div class="field">
+        <label>Duração Estimada</label>
+        <select id="duracao">
+          <option value="30 dias">30 dias</option>
+          <option value="45 dias">45 dias</option>
+          <option value="60 dias" selected>60 dias</option>
+          <option value="90 dias">90 dias</option>
+        </select>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="card-title" style="margin-top:4px">Aulas Teóricas via IA</div>
+    <div class="alert alert-warn">
+      ⚡ Este plano inclui acesso a módulos online com suporte de Inteligência Artificial para teoria de trânsito, simulados e acompanhamento individualizado.
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:4px">
+      <span class="tag">Vídeo-aulas gravadas</span>
+      <span class="tag">Simulados interativos</span>
+      <span class="tag">Chat IA 24h</span>
+      <span class="tag">Acompanhamento de progresso</span>
+      <span class="tag">Aulas práticas presenciais</span>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-outline" onclick="goTo(1)">← Voltar</button>
+    <button class="btn btn-primary" onclick="goTo(3)">Próximo: Contrato →</button>
+  </div>
+</div>
+
+<!-- ═══ STEP 3: CONTRATO ═══ -->
+<div class="section" id="sec3">
+  <div class="card">
+    <div class="card-title">Leia o Contrato</div>
+    <div class="contract-box" id="contractText"></div>
+    <hr class="divider">
+    <label class="checkbox-row">
+      <input type="checkbox" id="chkLeu">
+      <span>Declaro que <strong>li e compreendi</strong> todos os termos deste contrato e concordo com as condições estabelecidas.</span>
+    </label>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-outline" onclick="goTo(2)">← Voltar</button>
+    <button class="btn btn-primary" onclick="goTo(4)">Próximo: Assinar →</button>
+  </div>
+</div>
+
+<!-- ═══ STEP 4: ASSINATURA ═══ -->
+<div class="section" id="sec4">
+  <div class="card">
+    <div class="card-title">Assinatura do Aluno</div>
+    <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">
+      Assine dentro da área abaixo usando o dedo (celular) ou o mouse.
+    </p>
+    <div class="sig-wrap">
+      <canvas id="sigCanvas" height="180"></canvas>
+      <div class="sig-line"></div>
+      <div class="sig-label">ASSINE ACIMA DA LINHA</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-danger" onclick="clearSig()">✕ Limpar</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Confirmação de Pagamento</div>
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:24px; text-align:center">
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:2px; margin-bottom:16px">CHAVE PIX</div>
+      <div style="font-size:22px; font-weight:700; color:var(--accent); letter-spacing:2px; margin-bottom:4px">(82) 99356-7182</div>
+      <div style="font-size:12px; color:var(--muted); margin-bottom:20px">Eduardo Henrique Silva Barbosa</div>
+      <div style="border-top:1px solid var(--border); padding-top:16px; margin-bottom:16px">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:2px; margin-bottom:8px">VALOR A PAGAR</div>
+        <div id="pixValorDisplay" style="font-size:36px; font-weight:700; color:var(--accent2)">R$ —</div>
+        <div id="pixCatDisplay" style="font-size:12px; color:var(--muted); margin-top:4px">—</div>
+      </div>
+    </div>
+    <div class="alert alert-warn" style="margin-top:16px; text-align:center; font-size:13px; line-height:1.8">
+      📲 <strong>Após realizar o pagamento, envie o comprovante ao instrutor via WhatsApp.</strong>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Selfie de Confirmação</div>
+    <p style="font-size:13px; color:var(--muted); margin-bottom:12px; line-height:1.7">
+      Tire uma foto do seu rosto para confirmar sua identidade. Ela será embutida no PDF do contrato.
+    </p>
+    <div class="selfie-wrap" id="selfieWrap" onclick="document.getElementById('selfieInput').click()">
+      <div id="selfiePrompt">📷 Toque aqui para abrir a câmera</div>
+      <img id="selfiePreview" src="" alt="Selfie">
+    </div>
+    <input type="file" id="selfieInput" accept="image/*" capture="user" onchange="capturarSelfie()">
+    <div class="quiz-feedback" id="selfieFb" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Confirmação de Leitura</div>
+    <p style="font-size:13px; color:var(--muted); margin-bottom:8px; line-height:1.7">
+      Para confirmar que leu e aceita todos os termos, digite exatamente a frase abaixo:
+    </p>
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:14px; font-size:13px; color:var(--accent2); font-style:italic; margin-bottom:8px; line-height:1.8">
+      "Li e aceito os termos do Contrato de Introdução CNHAL2026"
+    </div>
+    <input class="frase-input" id="fraseConfirmacao" type="text" placeholder="Digite a frase acima..." oninput="verificarFrase()">
+    <div class="quiz-feedback" id="fraseFb" style="margin-top:6px"></div>
+  </div>
+
+    <div class="nav-row">
+    <button class="btn btn-outline" onclick="goTo(3)">← Voltar</button>
+    <button class="btn btn-success" onclick="finalizar()">✓ Finalizar e Gerar PDF</button>
+  </div>
+</div>
+
+<!-- ═══ STEP 5: CONCLUÍDO ═══ -->
+<div class="section" id="sec5">
+  <div class="card final-card">
+    <div class="final-icon">✅</div>
+    <h2>Contrato Assinado!</h2>
+    <p>Seu contrato foi registrado com sucesso. O instrutor foi notificado e irá liberar seu acesso em breve.</p>
+
+    <div class="info-row" style="background:rgba(92,184,92,0.08);border:1px solid rgba(92,184,92,0.25);border-radius:12px;padding:14px;margin-bottom:10px;">
+      <span class="ico">📲</span>
+      <div><strong style="color:#5cb85c;">Instrutor notificado</strong> — o instrutor recebeu seus dados pelo WhatsApp e irá gerar seu código de acesso.</div>
+    </div>
+
+    <div class="info-row" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:12px;padding:14px;margin-bottom:10px;">
+      <span class="ico">⏳</span>
+      <div><strong>Aguarde o código</strong> — em breve você receberá uma mensagem no WhatsApp com seu código de acesso pessoal.</div>
+    </div>
+
+    <div class="info-row" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:12px;padding:14px;margin-bottom:24px;">
+      <span class="ico">🔑</span>
+      <div><strong>Com o código em mãos</strong> — acesse o portal do instrutor e digite seu código para começar sua jornada de habilitação.</div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="btn-row" style="justify-content:center;flex-direction:column;gap:10px;">
+      <button class="btn btn-primary" onclick="downloadPDF()" style="width:100%;">⬇ Baixar meu contrato em PDF</button>
+      <a href="index.html" class="btn btn-outline" style="width:100%;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">🔓 Já tenho meu código — Entrar</a>
+      <a href="https://wa.me/5582993567182?text=Olá%20instrutor!%20Acabei%20de%20assinar%20o%20contrato%20CNHAL2026%20e%20aguardo%20meu%20código%20de%20acesso." target="_blank" class="btn" style="width:100%;background:linear-gradient(135deg,#1db954,#0e8c3a);color:#fff;border:none;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">💬 Chamar instrutor no WhatsApp</a>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+window.addEventListener('load', () => {
+  initCanvas();
+  setDefaultDate();
+  initQuiz();
+
+});
+
+function setDefaultDate() {
+  atualizarValor();
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('dataInicio').value = today;
+}
+
+// ── STEPS ──
+let currentStep = 'Q';
+function goTo(n) {
+  if (n === 1 && !document.getElementById('chkEntendeu').checked) { alert('Por favor, confirme que entendeu como funciona o modelo CNHAL2026 antes de continuar.'); return; }
+  if (n === 2 && !validateStep1()) return;
+  if (n === 4 && !document.getElementById('chkLeu').checked) {
+    alert('Por favor, leia e confirme o contrato antes de continuar.');
+    return;
+  }
+  if (n === 3) buildContract();
+  if (n === 4) { mostrarQR(); setTimeout(initCanvasWhenVisible, 50); }
+
+  document.getElementById('sec' + currentStep).classList.remove('active');
+  document.getElementById('sec' + n).classList.add('active');
+
+  // steps bar
+  // steps: 0=Como Funciona, 1=Dados, 2=Plano, 3=Contrato, 4=Assinatura, 5=Concluído
+  const stepIds = ['Q',0,1,2,3,4,5];
+  stepIds.forEach(i => {
+    const el = document.getElementById('s' + i);
+    if (!el) return;
+    el.classList.remove('active', 'done');
+    if (i < n) el.classList.add('done');
+    if (i === n) el.classList.add('active');
+  });
+  currentStep = n;
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ── VALIDATION ──
+function validateStep1() {
+  const fields = ['nomeAluno', 'email', 'nascimento', 'telefone'];
+  for (const f of fields) {
+    if (!document.getElementById(f).value.trim()) {
+      alert('Preencha todos os campos obrigatórios (*)');
+      document.getElementById(f).focus();
+      return false;
+    }
+  }
+  return true;
+}
+
+// ── CPF MASK ──
+document.getElementById('cpf').addEventListener('input', function () {
+  let v = this.value.replace(/\D/g, '').slice(0, 11);
+  v = v.replace(/(\d{3})(\d)/, '$1.$2');
+  v = v.replace(/(\d{3})(\d)/, '$1.$2');
+  v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  this.value = v;
+});
+
+// ── CONTRACT ──
+function atualizarValor() {
+  const cat = document.getElementById('categoria').value;
+  const mapa = {
+    'A – Motocicleta': '200,00',
+    'B – Automóvel': '200,00',
+    'AB – Moto + Carro': '400,00'
+  };
+  const v = mapa[cat] || '200,00';
+  document.getElementById('valor').value = v;
+  const vEl = document.getElementById('pixValorDisplay');
+  const cEl = document.getElementById('pixCatDisplay');
+  if (vEl) vEl.textContent = 'R$ ' + v;
+  if (cEl) cEl.textContent = cat;
+}
+
+function buildContract() {
+  const nome = document.getElementById('nomeAluno').value;
+  const cpf = document.getElementById('cpf').value;
+  const rg = '—';
+  const nasc = document.getElementById('nascimento').value ? 
+    new Date(document.getElementById('nascimento').value + 'T12:00:00').toLocaleDateString('pt-BR') : '—';
+  const tel = document.getElementById('telefone').value;
+  const email = document.getElementById('email').value || '—';
+  const end = document.getElementById('endereco').value || '—';
+  const cidade = document.getElementById('cidade').value;
+  const modalidade = document.getElementById('modalidade').value;
+  const categoria = document.getElementById('categoria').value;
+  const valor = document.getElementById('valor').value;
+  const pagamento = document.getElementById('pagamento').value;
+  const inicio = document.getElementById('dataInicio').value ?
+    new Date(document.getElementById('dataInicio').value + 'T12:00:00').toLocaleDateString('pt-BR') : '—';
+  const duracao = document.getElementById('duracao').value;
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  const horaExata = new Date().toLocaleTimeString('pt-BR');
+  const tsFormatado = timestampAssinatura ? new Date(timestampAssinatura).toLocaleString('pt-BR') : hoje + ' ' + horaExata;
+  const nivelHabilidade = quizRespostas['qNivel'] || '—';
+  const veiculoMoto = quizRespostas['qVeiculoA'] || '—';
+  const veiculoCarro = quizRespostas['qVeiculoB'] || '—';
+
+  document.getElementById('contractText').innerHTML = `
+    <h2>CONTRATO DE INTRODUÇÃO CNHAL2026<br>
+    <small style="font-size:12px; font-weight:300; color:#888; font-family:'IBM Plex Mono',monospace;">
+    Habilitação de Veículos – Categoria ${categoria.split('–')[0].trim()}</small></h2>
+
+    <h3>I. Partes</h3>
+    <p><strong>CONTRATADA:</strong> <span class="highlight">Eduardo Henrique Silva Barbosa</span>, pessoa física, Chave PIX: <span class="highlight">(82) 99356-7182</span>, instrutor autônomo atuando sob a marca <span class="highlight">CNHAL2026</span>, residente em <span class="highlight">${cidade}</span>.</p>
+    <br>
+    <p><strong>CONTRATANTE (ALUNO):</strong><br>
+    Nome: <span class="highlight">${nome}</span><br>
+    CPF: <span class="highlight">${cpf}</span><br>
+    Nascimento: <span class="highlight">${nasc}</span><br>
+    Endereço: <span class="highlight">${end} – ${cidade}</span><br>
+    Tel/WhatsApp: <span class="highlight">${tel}</span> | E-mail: <span class="highlight">${email}</span></p>
+    <br>
+    <p><strong>Perfil de condução:</strong> <span class="highlight">${nivelHabilidade}</span><br>
+    <strong>Motocicleta:</strong> <span class="highlight">${veiculoMoto}</span> | <strong>Automóvel:</strong> <span class="highlight">${veiculoCarro}</span></p>
+
+    <h3>II. Objeto do Contrato</h3>
+    <p>Este contrato <strong>não se trata de aulas particulares.</strong> A CONTRATADA compromete-se a orientar o CONTRATANTE no processo de obtenção da CNH – <strong>${categoria}</strong>, por meio do <strong>Modelo CNHAL2026</strong>, que consiste em:</p>
+    <br>
+    <p>▸ <strong>1 (uma) Aula Técnica e Teórica Presencial</strong> — conteúdo obrigatório conforme exigências do DETRAN/AL (mínimo 2h por categoria);<br>
+    ▸ <strong>2 (duas) Aulas Práticas de Direção Presenciais</strong> — obrigatórias para desenvolvimento das habilidades de condução;<br>
+    ▸ <strong>Acompanhamento via Assistente IA personalizado</strong> — fornecido ao CONTRATANTE após assinatura deste instrumento, para suporte contínuo em dúvidas teóricas, simulados e preparação para o exame DETRAN, até o início das aulas presenciais.</p>
+    <br>
+    <p>O assistente de Inteligência Artificial <strong>não substitui</strong> o instrutor responsável, sendo ferramenta de apoio ao estudo autônomo do CONTRATANTE.</p>
+
+    <h3>III. Estrutura das Aulas</h3>
+    <p><strong>Fase 1 — Preparação Online (IA):</strong><br>
+    O CONTRATANTE receberá um prompt de configuração personalizado para uso em assistente de IA (ex.: Claude, ChatGPT). Por meio dele poderá estudar teoria de trânsito, tirar dúvidas e realizar simulados de forma autônoma, no próprio ritmo, a qualquer horário.</p>
+    <br>
+    <p><strong>Fase 2 — Aulas Presenciais (3 aulas obrigatórias):</strong><br>
+    Após a preparação online, o CONTRATANTE realizará as 3 aulas presenciais com o instrutor Eduardo Henrique Silva Barbosa (CNHAL2026), conforme agendamento combinado via WhatsApp.</p>
+    <br>
+    <p><strong>Fase 3 — Processo DETRAN:</strong><br>
+    Após as aulas, o CONTRATANTE será orientado pelo instrutor sobre os próximos passos junto ao DETRAN/AL. <span class="highlight">Os dados pessoais do aluno serão fornecidos ao DETRAN somente após confirmação do pagamento e exclusivamente pelo instrutor responsável por este contrato.</span></p>
+
+    <h3>IV. Valor e Forma de Pagamento</h3>
+    <p>⭐ <strong>VALOR PROMOCIONAL DE LANÇAMENTO:</strong> O valor total dos serviços é de <span class="highlight">R$ ${valor}</span>, a ser pago na modalidade: <strong>${pagamento}</strong>.<br><small style="color:#888;font-size:11px">Este é um preço especial de lançamento da CNHAL2026, válido por tempo limitado e sujeito a alteração sem aviso prévio. O valor é garantido ao CONTRATANTE na data da assinatura deste instrumento.</small></p>
+    <p><strong>Pagamento via PIX:</strong> Chave PIX do instrutor: <span class="highlight">(82) 99356-7182</span> (Eduardo Henrique Silva Barbosa).<br>O comprovante de pagamento deve ser enviado ao instrutor via WhatsApp para confirmar a matrícula e liberar as etapas seguintes do processo DETRAN.</p>
+    <p>Em caso de atraso, incidirá multa de 2% sobre o valor devido, acrescida de juros de 1% ao mês.</p>
+
+    <h3>V. Prazo</h3>
+    <p>Início: <span class="highlight">${inicio}</span> — Duração estimada: <span class="highlight">${duracao}</span>, podendo ser prorrogado por acordo entre as partes.</p>
+
+    <h3>VI. Obrigações do Contratante</h3>
+    <p>a) Comparecer às aulas presenciais nos horários agendados;<br>
+    b) Utilizar o assistente IA apenas para fins de estudo relacionados à CNH;<br>
+    c) Efetuar os pagamentos nos prazos estabelecidos;<br>
+    d) <strong>Não fornecer seus dados pessoais a terceiros</strong> que se identifiquem como representantes da CNHAL2026 sem confirmação prévia e direta com o instrutor Eduardo Henrique Silva Barbosa;<br>
+    e) Todo contato referente a este contrato, pagamentos e processo DETRAN deve ser tratado <strong>exclusivamente com o instrutor responsável</strong> por este instrumento.</p>
+
+    <h3>VII. Proteção de Dados e Segurança (LGPD)</h3>
+    <p>Os dados pessoais do CONTRATANTE são tratados com total sigilo, em conformidade com a Lei nº 13.709/2018 (LGPD).<br><br>
+    <span class="highlight">⚠ ATENÇÃO: O CONTRATANTE jamais deve fornecer seus dados pessoais (CPF, RG, documentos) a terceiros que aleguem representar a CNHAL2026.</span> O único responsável pelo tratamento dos dados junto ao DETRAN/AL é o instrutor <strong>Eduardo Henrique Silva Barbosa</strong>, e isso ocorrerá <strong>somente após a confirmação do pagamento</strong>, dentro do processo oficial do DETRAN.</p>
+
+    <h3>VIII. Desistência e Cancelamento</h3>
+    <p>Em caso de desistência após o início dos serviços: retenção de 20% do valor total a título administrativo, acrescido dos serviços efetivamente prestados até a data da desistência.</p>
+
+    <h3>IX. Foro</h3>
+    <p>As partes elegem o foro da Comarca de <strong>Arapiraca/AL</strong> para dirimir quaisquer controvérsias oriundas deste contrato.</p>
+
+    <h3>X. Assinatura</h3>
+    <p><strong>${cidade}</strong>, ${hoje}.</p>
+    <br>
+    <p>_________________________________&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_________________________________<br>
+    <small>CNHAL2026&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${nome}</small><br>
+    <small>CONTRATADA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CONTRATANTE</small></p>
+  `;
+}
+
+
+// ── QUESTIONÁRIO ──
+const quizPerguntas = [
+  {
+    id: 'q1',
+    texto: 'Estou ciente de que o modelo CNHAL2026 <strong>não oferece aulas particulares</strong>. O serviço contratado é um modelo de instrução com acompanhamento via Inteligência Artificial e aulas presenciais pontuais.',
+    msg_nao: 'Este serviço não oferece aulas particulares. Se desejar aulas particulares, o modelo CNHAL2026 não é indicado para você.'
+  },
+  {
+    id: 'q2',
+    texto: 'Entendo que o meu <strong>estudo teórico será realizado online</strong>, de forma autônoma, com o auxílio de um Assistente de Inteligência Artificial que recebo após o pagamento.',
+    msg_nao: 'O estudo teórico é realizado online via IA. Isso é parte essencial do modelo.'
+  },
+  {
+    id: 'q3',
+    texto: 'Estou ciente de que o <strong>Prompt de Instrução (IA) só será enviado após a confirmação do pagamento</strong> pelo instrutor via WhatsApp.',
+    msg_nao: 'O prompt é enviado somente após confirmação do pagamento. Sem pagamento confirmado, o acesso não é liberado.'
+  },
+  {
+    id: 'q4',
+    texto: 'Compreendo que o valor contratado é <strong>promocional de lançamento</strong>, válido por tempo limitado, e que está garantido para mim na data da assinatura deste contrato.',
+    msg_nao: 'O preço promocional é uma condição essencial deste contrato. É necessário concordar para prosseguir.'
+  },
+  {
+    id: 'q5',
+    texto: 'Entendo que meus <strong>dados pessoais serão entregues ao DETRAN exclusivamente pelo instrutor responsável</strong> (Eduardo Henrique Silva Barbosa), somente após a confirmação do pagamento. Nunca fornecerei meus dados a terceiros.',
+    msg_nao: 'Seus dados pessoais são protegidos. Apenas o instrutor responsável trata com o DETRAN. Este é um ponto de segurança inegociável.'
+  },
+  {
+    id: 'q6',
+    texto: 'Estou ciente de que o modelo inclui <strong>3 aulas presenciais</strong>: a 1ª (Aula Técnica e Teórica) é <strong>gratuita e inclusa</strong> no modelo, e as 2 Aulas Práticas de Pilotagem são <strong>obrigatórias e pagas</strong> (incluídas no valor do contrato).',
+    msg_nao: 'A estrutura de 3 aulas (1 gratuita + 2 práticas obrigatórias inclusas) é parte fundamental do modelo CNHAL2026.'
+  },
+  // Pergunta nível de habilidade (tipo especial: select)
+  {
+    id: 'qNivel',
+    tipo: 'select',
+    texto: 'Qual é o seu <strong>nível de habilidade</strong> atual com o veículo da categoria escolhida?',
+    opcoes: [
+      { value: '', label: '— Selecione seu nível —' },
+      { value: 'Iniciante (zero experiência)', label: '🔰 Iniciante — Nunca conduzi, estou começando do zero' },
+      { value: 'Intermediário', label: '⚙️ Intermediário — Já conduzi algumas vezes, tenho noção básica' },
+      { value: 'Conduzo mas não tenho CNH', label: '🏍️ Conduzo mas não tenho CNH — Dirijo/piloto no dia a dia sem habilitação' }
+    ]
+  },
+  // Pergunta veículo próprio — Categoria A (moto)
+  {
+    id: 'qVeiculoA',
+    tipo: 'veiculo',
+    catLabel: '🏍️ Categoria A — Motocicleta',
+    texto: 'Você possui <strong>motocicleta própria</strong> e pretende usá-la nas aulas práticas e/ou na prova?'
+  },
+  // Pergunta veículo próprio — Categoria B (carro)
+  {
+    id: 'qVeiculoB',
+    tipo: 'veiculo',
+    catLabel: '🚗 Categoria B — Automóvel',
+    texto: 'Você possui <strong>automóvel próprio</strong> e pretende usá-lo nas aulas práticas e/ou na prova?'
+  }
+
+];
+
+const quizRespostas = {};
+
+function initQuiz() {
+  const lista = document.getElementById('quizLista');
+  const prog = document.getElementById('quizProgress');
+  if (!lista) return;
+  lista.innerHTML = '';
+  prog.innerHTML = '';
+  quizPerguntas.forEach((p, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'quiz-dot';
+    dot.id = 'dot_' + p.id;
+    prog.appendChild(dot);
+
+    let extraHtml = '';
+
+    if (p.tipo === 'select') {
+      const opts = p.opcoes.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+      extraHtml = `<select class="quiz-select" id="sel_${p.id}" onchange="responderSelect('${p.id}')">
+        ${opts}
+      </select>
+      <div id="nivel_badge_${p.id}"></div>`;
+    } else if (p.tipo === 'veiculo') {
+      const catLbl = p.catLabel ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:1px;margin-bottom:10px">${p.catLabel}</div>` : '';
+      const placeholderMoto = p.id === 'qVeiculoA' ? 'ABC-1234 (moto)' : 'ABC-1234 (carro)';
+      const labelNao = p.id === 'qVeiculoA' ? '✕ NÃO — usarei moto do DETRAN ou alugada' : '✕ NÃO — usarei carro do DETRAN ou alugado';
+      const labelSim = p.id === 'qVeiculoA' ? '✓ SIM — usarei minha moto' : '✓ SIM — usarei meu carro';
+      extraHtml = `
+      ${catLbl}
+      <div class="quiz-btns">
+        <button class="quiz-btn" id="sim_${p.id}" onclick="responderVeiculo('${p.id}', true)">${labelSim}</button>
+        <button class="quiz-btn" id="nao_${p.id}" onclick="responderVeiculo('${p.id}', false)">${labelNao}</button>
+      </div>
+      <div class="veiculo-box" id="placaBox_${p.id}">
+        <label style="font-size:11px; font-family:'IBM Plex Mono',monospace; color:var(--muted); letter-spacing:1px">PLACA DO VEÍCULO</label>
+        <input class="quiz-input-placa" id="placa_${p.id}" maxlength="8" placeholder="${placeholderMoto}" oninput="validarPlaca('${p.id}')">
+        <div class="quiz-feedback" id="fb_placa_${p.id}"></div>
+      </div>`;
+    } else {
+      extraHtml = `
+      <div class="quiz-btns">
+        <button class="quiz-btn" id="sim_${p.id}" onclick="responder('${p.id}', true)">✓ SIM</button>
+        <button class="quiz-btn" id="nao_${p.id}" onclick="responder('${p.id}', false)">✕ NÃO</button>
+      </div>`;
+    }
+
+    lista.innerHTML += `
+      <div class="quiz-item" id="item_${p.id}">
+        <div class="quiz-num">${i+1}</div>
+        <div style="flex:1">
+          <div class="quiz-text">${p.texto}</div>
+          ${extraHtml}
+          <div class="quiz-feedback" id="fb_${p.id}"></div>
+        </div>
+      </div>`;
+  });
+}
+
+
+function responderSelect(id) {
+  const sel = document.getElementById('sel_' + id);
+  const val = sel.value;
+  const item = document.getElementById('item_' + id);
+  const dot = document.getElementById('dot_' + id);
+  const badge = document.getElementById('nivel_badge_' + id);
+  const fb = document.getElementById('fb_' + id);
+  if (!val) {
+    quizRespostas[id] = null;
+    item.className = 'quiz-item';
+    dot.className = 'quiz-dot';
+    badge.innerHTML = '';
+    checarTodas();
+    return;
+  }
+  quizRespostas[id] = val;
+  item.className = 'quiz-item ok';
+  dot.className = 'quiz-dot ok';
+  fb.className = 'quiz-feedback ok';
+  fb.textContent = '✓ Registrado.';
+  const cores = {
+    'Iniciante (zero experiência)': 'nivel-iniciante',
+    'Intermediário': 'nivel-intermediario',
+    'Conduzo mas não tenho CNH': 'nivel-conduzo'
+  };
+  badge.innerHTML = `<span class="nivel-badge ${cores[val] || ''}">${val}</span>`;
+  checarTodas();
+}
+
+function responderVeiculo(id, sim) {
+  const btnSim = document.getElementById('sim_' + id);
+  const btnNao = document.getElementById('nao_' + id);
+  const placaBox = document.getElementById('placaBox_' + id);
+  const item = document.getElementById('item_' + id);
+  const dot = document.getElementById('dot_' + id);
+  const fb = document.getElementById('fb_' + id);
+
+  btnSim.className = 'quiz-btn';
+  btnNao.className = 'quiz-btn';
+
+  if (sim) {
+    btnSim.className = 'quiz-btn selected-sim';
+    placaBox.classList.add('visivel');
+    quizRespostas[id] = null; // aguarda placa
+    item.className = 'quiz-item';
+    dot.className = 'quiz-dot pending';
+    fb.textContent = '';
+  } else {
+    btnNao.className = 'quiz-btn selected-nao';
+    placaBox.classList.remove('visivel');
+    const semVeiculo = id === 'qVeiculoA' ? 'Usará moto do DETRAN ou alugada no dia da prova' : 'Usará carro do DETRAN ou alugado no dia da prova';
+    quizRespostas[id] = semVeiculo;
+    item.className = 'quiz-item ok';
+    dot.className = 'quiz-dot ok';
+    fb.className = 'quiz-feedback ok';
+    const tipoCat = id === 'qVeiculoA' ? 'moto' : 'carro';
+    fb.textContent = '✓ Registrado — sem ' + tipoCat + ' próprio.';
+  }
+  checarTodas();
+}
+
+function validarPlaca(id) {
+  const input = document.getElementById('placa_' + id);
+  const fb = document.getElementById('fb_placa_' + id);
+  const item = document.getElementById('item_' + id);
+  const dot = document.getElementById('dot_' + id);
+  const mainFb = document.getElementById('fb_' + id);
+
+  let v = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  // Formatar ABC1234 ou ABC1D23
+  if (v.length > 3) v = v.slice(0,3) + '-' + v.slice(3,7);
+  input.value = v;
+
+  const placa = v.replace('-','');
+  if (placa.length >= 7) {
+    const tipoV = id === 'qVeiculoA' ? 'Moto própria' : 'Carro próprio';
+    quizRespostas[id] = tipoV + ' — Placa: ' + v;
+    item.className = 'quiz-item ok';
+    dot.className = 'quiz-dot ok';
+    fb.className = 'quiz-feedback ok';
+    fb.textContent = '✓ Placa registrada: ' + v + (id === 'qVeiculoA' ? ' (moto)' : ' (carro)');
+    mainFb.textContent = '';
+  } else {
+    quizRespostas[id] = null;
+    item.className = 'quiz-item';
+    dot.className = 'quiz-dot pending';
+    fb.className = 'quiz-feedback';
+    fb.textContent = '';
+  }
+  checarTodas();
+}
+
+function checarTodas() {
+  // Perguntas Sim/Não: todas devem ser true
+  const simNao = quizPerguntas
+    .filter(p => !p.tipo)
+    .every(p => quizRespostas[p.id] === true);
+  // Perguntas especiais: devem ter valor não-nulo
+  const especiais = quizPerguntas
+    .filter(p => p.tipo)
+    .every(p => quizRespostas[p.id] != null && quizRespostas[p.id] !== '');
+  const btn = document.getElementById('btnAvancarQuiz');
+  if (simNao && especiais) {
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+  } else {
+    btn.disabled = true;
+    btn.style.opacity = '.4';
+    btn.style.cursor = 'not-allowed';
+  }
+}
+
+function responder(id, sim) {
+  quizRespostas[id] = sim;
+  const item = document.getElementById('item_' + id);
+  const fb = document.getElementById('fb_' + id);
+  const dot = document.getElementById('dot_' + id);
+  const btnSim = document.getElementById('sim_' + id);
+  const btnNao = document.getElementById('nao_' + id);
+  const pergunta = quizPerguntas.find(p => p.id === id);
+
+  // Reset botões
+  btnSim.className = 'quiz-btn';
+  btnNao.className = 'quiz-btn';
+
+  if (sim) {
+    item.className = 'quiz-item ok';
+    btnSim.className = 'quiz-btn selected-sim';
+    fb.className = 'quiz-feedback ok';
+    fb.textContent = '✓ Confirmado.';
+    dot.className = 'quiz-dot ok';
+  } else {
+    item.className = 'quiz-item erro';
+    btnNao.className = 'quiz-btn selected-nao';
+    fb.className = 'quiz-feedback erro';
+    fb.textContent = '✕ ' + pergunta.msg_nao;
+    dot.className = 'quiz-dot pending';
+  }
+
+  checarTodas();
+}
+
+function avancarQuiz() {
+  const simNao = quizPerguntas.filter(p => !p.tipo).every(p => quizRespostas[p.id] === true);
+  const especiais = quizPerguntas.filter(p => p.tipo).every(p => quizRespostas[p.id] != null && quizRespostas[p.id] !== '');
+  if (!simNao || !especiais) {
+    alert('Responda todas as perguntas para continuar.');
+    return;
+  }
+  goTo(0);
+}
+
+// ── PIX DISPLAY ──
+function mostrarQR() {
+  const valor = document.getElementById('valor').value || '—';
+  const cat = document.getElementById('categoria').value || '—';
+  const vEl = document.getElementById('pixValorDisplay');
+  const cEl = document.getElementById('pixCatDisplay');
+  if (vEl) vEl.textContent = valor !== '—' ? 'R$ ' + valor : 'R$ —';
+  if (cEl) cEl.textContent = cat;
+}
+
+// ── CANVAS SIGNATURE ──
+let isDrawing = false, lastX = 0, lastY = 0, ctx, canvas;
+let selfieDataUrl = null;
+let fraseOk = false;
+let contratoHash = '';
+let timestampAssinatura = '';
+
+
+// ── ANTIFRAUDE ──
+function capturarSelfie() {
+  const input = document.getElementById('selfieInput');
+  const preview = document.getElementById('selfiePreview');
+  const wrap = document.getElementById('selfieWrap');
+  const fb = document.getElementById('selfieFb');
+  const prompt = document.getElementById('selfiePrompt');
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    selfieDataUrl = e.target.result;
+    preview.src = selfieDataUrl;
+    wrap.classList.add('captured');
+    prompt.textContent = '✓ Selfie capturada — toque para refazer';
+    fb.className = 'quiz-feedback ok';
+    fb.textContent = '✓ Foto registrada com sucesso.';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+const FRASE_ESPERADA = 'li e aceito os termos do contrato de introdução cnhal2026';
+function verificarFrase() {
+  const input = document.getElementById('fraseConfirmacao');
+  const fb = document.getElementById('fraseFb');
+  const digitado = input.value.trim().toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g,'');
+  const esperado = FRASE_ESPERADA.normalize('NFD').replace(/[̀-ͯ]/g,'');
+  if (digitado === esperado) {
+    input.className = 'frase-input ok';
+    fb.className = 'quiz-feedback ok';
+    fb.textContent = '✓ Frase confirmada.';
+    fraseOk = true;
+  } else {
+    input.className = 'frase-input' + (input.value.length > 5 ? ' erro' : '');
+    fb.className = 'quiz-feedback';
+    fb.textContent = '';
+    fraseOk = false;
+  }
+}
+
+async function gerarHashContrato(texto) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(texto));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function prepararHash() {
+  const nome = document.getElementById('nomeAluno').value;
+  const cpf = document.getElementById('cpf').value;
+  const email = document.getElementById('email').value;
+  const categoria = document.getElementById('categoria').value;
+  const valor = document.getElementById('valor').value;
+  const ts = new Date().toISOString();
+  timestampAssinatura = ts;
+  const conteudo = nome + cpf + email + categoria + valor + ts;
+  contratoHash = await gerarHashContrato(conteudo);
+  return contratoHash;
+}
+
+let canvasReady = false;
+
+function initCanvas() {
+  canvas = document.getElementById('sigCanvas');
+  ctx = canvas.getContext('2d');
+  // Não redimensiona agora — canvas ainda está oculto (width=0)
+  // Inicializa eventos apenas
+  canvas.addEventListener('mousedown', startDraw);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', () => isDrawing = false);
+  canvas.addEventListener('mouseleave', () => isDrawing = false);
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); const t = e.touches[0]; startDraw({offsetX: t.clientX - canvas.getBoundingClientRect().left, offsetY: t.clientY - canvas.getBoundingClientRect().top}); }, {passive: false});
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); const t = e.touches[0]; draw({offsetX: t.clientX - canvas.getBoundingClientRect().left, offsetY: t.clientY - canvas.getBoundingClientRect().top}); }, {passive: false});
+  canvas.addEventListener('touchend', () => isDrawing = false);
+  window.addEventListener('resize', () => { if (canvasReady) resizeCanvas(); });
+}
+
+function initCanvasWhenVisible() {
+  // Chamado quando o step 4 fica visível
+  if (canvasReady) return;
+  canvasReady = true;
+  resizeCanvas();
+}
+
+function resizeCanvas() {
+  if (!canvas) return;
+  const w = canvas.offsetWidth;
+  if (w === 0) return; // ainda oculto, ignora
+  // Salva desenho atual antes de redimensionar
+  let imgData = null;
+  try {
+    if (canvas.width > 0 && canvas.height > 0) {
+      imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    }
+  } catch(e) {}
+  canvas.width = w;
+  canvas.height = 180;
+  ctx.strokeStyle = '#c8a96e';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  if (imgData) ctx.putImageData(imgData, 0, 0);
+}
+
+function startDraw(e) {
+  isDrawing = true;
+  [lastX, lastY] = [e.offsetX, e.offsetY];
+}
+function draw(e) {
+  if (!isDrawing) return;
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(e.offsetX, e.offsetY);
+  ctx.stroke();
+  [lastX, lastY] = [e.offsetX, e.offsetY];
+}
+function clearSig() {
+  if (canvas) ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+function sigIsEmpty() {
+  if (!canvas || canvas.width === 0 || canvas.height === 0) return true;
+  try {
+    const d = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    return !d.some(v => v !== 0);
+  } catch(e) {
+    return true;
+  }
+}
+
+// ── FINALIZAR ──
+async function finalizar() {
+  if (sigIsEmpty()) {
+    alert('Por favor, assine o contrato antes de finalizar.');
+    return;
+  }
+  if (!selfieDataUrl) {
+    alert('Por favor, tire uma selfie para confirmar sua identidade.');
+    return;
+  }
+  if (!fraseOk) {
+    alert('Por favor, digite a frase de confirmação corretamente.');
+    document.getElementById('fraseConfirmacao').focus();
+    return;
+  }
+  await prepararHash();
+
+  // Coleta dados do aluno para notificar instrutor
+  var nome = document.getElementById('nomeAluno') ? document.getElementById('nomeAluno').value : '';
+  var tel = document.getElementById('telefone') ? document.getElementById('telefone').value : '';
+  var categoria = document.getElementById('categoria') ? document.getElementById('categoria').value : '';
+  var agora = new Date().toLocaleString('pt-BR');
+
+  // Abre WhatsApp do instrutor automaticamente com dados do aluno
+  var msg = encodeURIComponent(
+    '🔔 NOVO CONTRATO ASSINADO — CNHAL2026\n\n' +
+    '👤 Nome: ' + nome + '\n' +
+    '📱 WhatsApp: ' + tel + '\n' +
+    '🏍️ Categoria: ' + categoria + '\n' +
+    '🕐 Data/Hora: ' + agora + '\n\n' +
+    'Aguardando liberação do código de acesso.'
+  );
+  setTimeout(function() {
+    window.open('https://wa.me/5582993567182?text=' + msg, '_blank');
+  }, 800);
+
+  goTo(5);
+}
+
+// ── PDF ──
+let pdfGenerated = false;
+function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+  const nome = document.getElementById('nomeAluno').value;
+  const cpf = document.getElementById('cpf').value;
+  const rg = '—';
+  const nasc = document.getElementById('nascimento').value ?
+    new Date(document.getElementById('nascimento').value + 'T12:00:00').toLocaleDateString('pt-BR') : '—';
+  const tel = document.getElementById('telefone').value;
+  const email = document.getElementById('email').value || '—';
+  const end = document.getElementById('endereco').value || '—';
+  const cidade = document.getElementById('cidade').value;
+  const modalidade = document.getElementById('modalidade').value;
+  const categoria = document.getElementById('categoria').value;
+  const valor = document.getElementById('valor').value;
+  const pagamento = document.getElementById('pagamento').value;
+  const inicio = document.getElementById('dataInicio').value ?
+    new Date(document.getElementById('dataInicio').value + 'T12:00:00').toLocaleDateString('pt-BR') : '—';
+  const duracao = document.getElementById('duracao').value;
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  const horaExata = new Date().toLocaleTimeString('pt-BR');
+  const tsFormatado = timestampAssinatura ? new Date(timestampAssinatura).toLocaleString('pt-BR') : hoje + ' ' + horaExata;
+  const nivelHabilidade = quizRespostas['qNivel'] || '—';
+  const veiculoMoto = quizRespostas['qVeiculoA'] || '—';
+  const veiculoCarro = quizRespostas['qVeiculoB'] || '—';
+
+  const margin = 18;
+  let y = 20;
+  const lh = 6;
+  const pw = 210 - margin * 2;
+
+  const addLine = (text, opts = {}) => {
+    const { size = 10, bold = false, center = false, color = [30, 30, 30] } = opts;
+    doc.setFontSize(size);
+    doc.setFont('helvetica', bold ? 'bold' : 'normal');
+    doc.setTextColor(...color);
+    if (center) {
+      doc.text(text, 105, y, { align: 'center' });
+    } else {
+      const lines = doc.splitTextToSize(text, pw);
+      doc.text(lines, margin, y);
+      y += (lines.length - 1) * lh;
+    }
+    y += lh;
+  };
+
+  const section = (title) => {
+    y += 3;
+    doc.setFillColor(220, 185, 100);
+    doc.rect(margin, y - 4, pw, 6, 'F');
+    doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+    doc.setTextColor(20, 20, 20);
+    doc.text(title.toUpperCase(), margin + 2, y);
+    y += 5;
+    doc.setTextColor(30, 30, 30);
+  };
+
+  const checkPage = (needed = 20) => {
+    if (y + needed > 280) { doc.addPage(); y = 18; }
+  };
+
+  // Header
+  doc.setFillColor(13, 13, 13);
+  doc.rect(0, 0, 210, 28, 'F');
+  doc.setFontSize(15); doc.setFont('helvetica', 'bold');
+  doc.setTextColor(200, 169, 110);
+  doc.text('CNHAL2026', 105, 13, { align: 'center' });
+  doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+  doc.setTextColor(150, 150, 150);
+  doc.text('CONTRATO DE INTRODUÇÃO CNHAL2026', 105, 20, { align: 'center' });
+  doc.text(`Emitido em: ${hoje}`, 105, 25, { align: 'center' });
+  y = 38;
+
+  section('I. Partes');
+  addLine(`CONTRATADA: Eduardo Henrique Silva Barbosa — PIX: (82) 99356-7182`, { size: 9, bold: true });
+  addLine(`Instrutor autônomo — Marca: CNHAL2026 — ${cidade}`, { size: 9 });
+  addLine(`Chave PIX instrutor: (82) 99356-7182`, { size: 9 });
+  addLine(`CONTRATANTE: ${nome}`, { size: 9, bold: true });
+  addLine(`CPF: ${cpf}   |   Nascimento: ${nasc}`, { size: 9 });
+  addLine(`Endereço: ${end} – ${cidade}`, { size: 9 });
+  addLine(`Tel: ${tel}   |   E-mail: ${email}`, { size: 9 });
+
+  checkPage();
+  section('II. Objeto');
+  addLine(`Formação de condutor – CNH ${categoria}, modalidade: ${modalidade}.`, { size: 9 });
+  addLine('Inclui aulas teóricas online com IA, simulados adaptativos e aulas práticas presenciais.', { size: 9 });
+
+  checkPage();
+  section('III. Serviços Incluídos');
+  const servicos = [
+    'a) Aulas teóricas digitais com suporte de Inteligência Artificial',
+    'b) Simulados ilimitados até aprovação no DETRAN',
+    'c) Aulas práticas de direção conforme grade obrigatória',
+    'd) Suporte via WhatsApp e chat IA durante vigência',
+    'e) Agendamento de exames (taxa DETRAN não inclusa)',
+  ];
+  servicos.forEach(s => addLine(s, { size: 9 }));
+
+  checkPage();
+  section('IV. Valor e Pagamento');
+  addLine(`⭐ VALOR PROMOCIONAL DE LANÇAMENTO: R$ ${valor} — Forma: ${pagamento}`, { size: 9, bold: true });
+  addLine('Preço especial válido por tempo limitado. Valor garantido na data da assinatura.', { size: 8 });
+  addLine('Atraso: multa de 2% + juros de 1% ao mês.', { size: 9 });
+
+  checkPage();
+  section('V. Prazo');
+  addLine(`Início: ${inicio}   |   Duração estimada: ${duracao}`, { size: 9 });
+
+  checkPage();
+  section('VI. Obrigações do Contratante');
+  const obs = [
+    'a) Comparecer às aulas práticas nos horários agendados',
+    'b) Manter documentação pessoal atualizada',
+    'c) Seguir orientações do instrutor e da plataforma IA',
+    'd) Efetuar pagamentos nos prazos estabelecidos',
+    'e) Não repassar credenciais de acesso a terceiros',
+  ];
+  obs.forEach(o => addLine(o, { size: 9 }));
+
+  checkPage();
+  section('VII. Cancelamento');
+  addLine('Retenção de 20% do valor total + serviços efetivamente prestados em caso de desistência.', { size: 9 });
+
+  checkPage();
+  section('VIII. LGPD');
+  addLine('Dados usados exclusivamente para prestação dos serviços, conforme Lei nº 13.709/2018.', { size: 9 });
+
+  checkPage();
+  section('IX. Foro');
+  addLine(`Comarca de Arapiraca/AL. ${cidade}, ${hoje}.`, { size: 9 });
+
+  // Antifraude
+  checkPage(28);
+  section('REGISTRO DE AUTENTICIDADE');
+  addLine(`Assinado em: ${tsFormatado}`, { size: 9 });
+  addLine(`Hash SHA-256: ${contratoHash}`, { size: 8, color: [100,100,100] });
+  addLine('Este documento possui registro de data/hora e hash de integridade.', { size: 8, color: [120,120,120] });
+  addLine('Qualquer alteração invalida o hash acima.', { size: 8, color: [120,120,120] });
+
+  // Selfie
+  if (selfieDataUrl) {
+    checkPage(50);
+    section('SELFIE DO ASSINANTE');
+    try {
+      doc.addImage(selfieDataUrl, 'JPEG', margin, y, 35, 35);
+      addLine('Foto capturada no momento da assinatura digital.', { size: 8, color: [120,120,120] });
+      y += 30;
+    } catch(e) {}
+  }
+
+  // Signature
+  y += 8;
+  checkPage(40);
+  const sigImg = canvas.toDataURL('image/png');
+  doc.addImage(sigImg, 'PNG', margin, y, 80, 25);
+  doc.setDrawColor(180, 180, 180);
+  doc.line(margin, y + 27, margin + 80, y + 27);
+  doc.line(115, y + 27, 210 - margin, y + 27);
+  y += 30;
+  doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 100, 100);
+  doc.text(`${nome} — CONTRATANTE`, margin, y);
+  doc.text('CNHAL2026 — CONTRATADA', 115, y);
+
+  doc.save(`Contrato_${nome.replace(/\s+/g, '_')}_${hoje.replace(/\//g, '-')}.pdf`);
+}
+
+function novoContrato() {
+  location.reload();
+}
+</script>
+</body>
+</html>
